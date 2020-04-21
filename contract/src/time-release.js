@@ -1,4 +1,4 @@
-class _BaseTimeRelease extends Payment {
+class _BaseTimeRelease {
     constructor(payment, lockedUntil = Date.now()) {
         let _payment = payment;
         let _lockedUntil = lockedUntil;
@@ -12,13 +12,13 @@ class _BaseTimeRelease extends Payment {
     currentTime() { }
 }
 
-class _TimeRelease extends BaseTimeRelease {
+class _TimeRelease extends _BaseTimeRelease {
     currentTime() {
         return Date.now();
     }
 }
 
-class _TestTimeRelease extends BaseTimeRelease {
+class _TestTimeRelease extends _BaseTimeRelease {
     setCurrentTime(time) {
         this._currentTime = time;
     }

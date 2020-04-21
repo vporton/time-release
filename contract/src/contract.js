@@ -2,6 +2,7 @@
 import harden from '@agoric/harden';
 import { produceNotifier } from '@agoric/notifier';
 import { makeZoeHelpers } from '@agoric/zoe/src/contractSupport/zoeHelpers';
+import produceIssuer from '@agoric/ertp';
 
 import { makeTestTimeRelease } from './time-release';
 
@@ -28,17 +29,12 @@ export const makeContract = harden(zcf => {
         inviteAnOffer(
             harden({
                 offerHook: withdrawHook,
-                customProperties: { inviteDesc: 'encouragement' },
+                customProperties: { inviteDesc: 'timed withdrawal' },
             }),
     );
 
     return harden({
-        invite: inviteAnOffer(
-            harden({
-                offerHook: withdrawHook,
-                customProperties: { inviteDesc: 'admin' },
-            }),
-        ),
+        invite: makeInvite,
         publicAPI: {
             makeInvite,
         },

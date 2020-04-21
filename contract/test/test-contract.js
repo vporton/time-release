@@ -50,14 +50,8 @@ test('contract with valid offers', async t => {
       amountMath: bucksAmountMath,
     } = produceIssuer('bucks');
 
-    // Let's give ourselves 5 bucks to start
-    const bucks5 = bucksAmountMath.make(5);
-    const bucksPayment = bucksMint.mintPayment(bucks5);
-
     // Create the contract instance, using our new issuer.
-    const adminInvite = await E(zoe).makeInstance(installationHandle, {
-      Tip: bucksIssuer,
-    });
+    const adminInvite = await E(zoe).makeInstance(installationHandle, {});
 
     // Check that we received an invite as the result of making the
     // contract instance.
@@ -108,12 +102,12 @@ test('contract with valid offers', async t => {
     );
 
     // Let's use the contract like a client and get some encouragement!
-    const encouragementInvite = await E(publicAPI).makeInvite();
+    const withdrawalInvite = await E(publicAPI).makeInvite();
 
-    const { outcome: encouragementP } = await E(zoe).offer(encouragementInvite);
+    const { outcome: withdrawalP } = await E(zoe).offer(withdrawalInvite);
 
     t.equals(
-      await encouragementP,
+      await withdrawalP,
       `You're doing great!`,
       `encouragement matches expected`,
     );
@@ -122,29 +116,7 @@ test('contract with valid offers', async t => {
     nextUpdateP.then(async result => {
       t.equals(result.value.count, 1, 'count increments by 1');
 
-      // Now, let's get a premium encouragement message
-      const encouragementInvite2 = await E(publicAPI).makeInvite();
-      const proposal = harden({ give: { Tip: bucks5 } });
-      const paymentKeywordRecord = harden({
-        Tip: bucksPayment,
-      });
-      const { outcome: secondEncouragementP } = await E(zoe).offer(
-        encouragementInvite2,
-        proposal,
-        paymentKeywordRecord,
-      );
-
-      t.equals(
-        await secondEncouragementP,
-        `Wow, just wow. I have never seen such talent!`,
-        `premium message is as expected`,
-      );
-
-      const newResult = notifier.getUpdateSince();
-      t.deepEquals(newResult.value.count, 2, `count is now 2`);
-
       // Let's get our Tips
-      cancelAdmin();
       Promise.resolve(E.G(adminPayoutP).Tip).then(tip => {
         bucksIssuer.getAmountOf(tip).then(tipAmount => {
           t.deepEquals(tipAmount, bucks5, `payout is 5 bucks, all the tips`);
