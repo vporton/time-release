@@ -7,10 +7,10 @@ export class BaseTimeRelease extends Purse {
         // FIXME: harden
     }
     getCurrentAmount() {
-        fullPeriodsPassed = Math.floor((currentTime() - this.initiated) / this.periodLength);
+        const fullPeriodsPassed = Math.floor((currentTime() - this.initiated) / this.periodLength);
         if(fullPeriodsPassed < _transfer.lockedForPeriods) return 0;
         if(fullPeriodsPassed >= _transfer.vestedForPeriods) fullPeriodsPassed = _transfer.vestedForPeriods - 1;
-        perPeriod = _transfer.amount / _transfer.vestedForPeriods;
+        const perPeriod = _transfer.amount / _transfer.vestedForPeriods;
         return this.periodAmount * (fullPeriodsPassed + 1); // FIXME: math
     }
     // withdraw(amount) {        
