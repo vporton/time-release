@@ -33,7 +33,7 @@ export const makeContract = harden(zcf => {
     );
 
     return harden({
-        invite: makeInvite,
+        invite: makeInvite(),
         publicAPI: {
             makeInvite,
         },
