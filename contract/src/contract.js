@@ -13,7 +13,8 @@ import { makeTestTimeRelease } from './time-release';
  */
 export const makeContract = harden(zcf => {
     const { inviteAnOffer, rejectOffer } = makeZoeHelpers(zcf);
-    const { mint: baytownBucksMint, issuer } = produceIssuer('BaytownBucks');
+    const currencyIssuer = produceIssuer('BaytownBucks')
+    const { mint: baytownBucksMint, issuer } = currencyIssuer;
     const baytownBucks = issuer.getAmountMath().make;
 
     const withdrawHook = offerHandle => {
@@ -41,6 +42,7 @@ export const makeContract = harden(zcf => {
         publicAPI: {
             makeInvite,
             getNotifier: () => notifier, // TODO: Rename.
+            currencyIssuer: currencyIssuer,
         },
     });
 });

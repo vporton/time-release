@@ -13,7 +13,6 @@ import { makeGetInstanceHandle } from '@agoric/zoe/src/clientSupport';
 const contractPath = `${__dirname}/../src/contract`;
 
 test('contract with valid offers', async t => {
-  debugger;
   // t.plan(10);
   try {
     // Outside of tests, we should use the long-lived Zoe on the
@@ -44,13 +43,6 @@ test('contract with valid offers', async t => {
       `the code installed passes a quick check of what we intended to install`,
     );
 
-    // Make some mints/issuers just for our test.
-    const {
-      issuer: bucksIssuer,
-      mint: bucksMint,
-      amountMath: bucksAmountMath,
-    } = produceIssuer('bucks'); // FIXME: it is a different currency every time!
-
     // Create the contract instance, using our new issuer.
     const adminInvite = await E(zoe).makeInstance(installationHandle, {});
 
@@ -79,6 +71,13 @@ test('contract with valid offers', async t => {
     // publicAPI methods.
     const instanceRecord = await E(zoe).getInstance(instanceHandle);
     const { publicAPI } = instanceRecord;
+
+    // Make some mints/issuers just for our test.
+    const {
+      issuer: bucksIssuer,
+      mint: bucksMint,
+      amountMath: bucksAmountMath,
+    } = await E.G(publicAPI).currencyIssuer;
 
     const notifier = publicAPI.getNotifier();
     const { value, updateHandle } = notifier.getUpdateSince();
