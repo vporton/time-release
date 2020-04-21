@@ -49,7 +49,7 @@ test('contract with valid offers', async t => {
       issuer: bucksIssuer,
       mint: bucksMint,
       amountMath: bucksAmountMath,
-    } = produceIssuer('bucks');
+    } = produceIssuer('bucks'); // FIXME: it is a different currency every time!
 
     // Create the contract instance, using our new issuer.
     const adminInvite = await E(zoe).makeInstance(installationHandle, {});
@@ -91,10 +91,11 @@ test('contract with valid offers', async t => {
     
     // Getting payment resolves the 'nextUpdateP' promise
     nextUpdateP.then(async result => {
-      // t.equals(result.value.count, 1, 'count increments by 1');
+      console.log("AAA", E.G(withdrawalP))
 
       // Let's get our Tips
-      Promise.resolve(E.G(withdrawalP).Tip).then(tip => {
+      Promise.resolve(E.G(withdrawalP)/*.Tip*/).then(tip => {
+        console.log("BBB", tip);
         bucksIssuer.getAmountOf(tip).then(tipAmount => {
           console.log("ZZZ", tipAmount.amountMath());
           t.deepEquals(tipAmount, 1000, `payout is 1000 bucks, all the tips`);
