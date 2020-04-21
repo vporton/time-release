@@ -3,10 +3,10 @@ class _BaseTimeRelease {
         let _payment = payment;
         let _lockedUntil = lockedUntil;
         this.lockedUntil = function() {
-            return this._lockedUntil;
+            return _lockedUntil;
         }
         this.getPayment = function() {
-            return this.currentTime() >= this.lockedUntil ? this._payment : null;
+            return this.currentTime() >= this.lockedUntil ? _payment : null;
         }    
     }
     currentTime() { }
