@@ -87,6 +87,7 @@ test('contract with valid offers', async t => {
     // Let's use the contract like a client and get some encouragement!
     const withdrawalInvite = await E(publicAPI).makeInvite();
 
+    // const { outcome: withdrawalP } = await E(zoe).offer(withdrawalInvite);
     const { outcome: withdrawalP } = await E(zoe).offer(withdrawalInvite);
 
     // Getting encouragement resolves the 'nextUpdateP' promise
