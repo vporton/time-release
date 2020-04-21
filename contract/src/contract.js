@@ -25,7 +25,7 @@ export const makeContract = harden(zcf => {
     };
 
     const makeInvite = () => {
-        let invite = inviteAnOffer(
+        let invite = inviteAnOffer( // TODO: const
             harden({
                 offerHook: withdrawHook,
                 customProperties: { inviteDesc: 'timed withdrawal' },
