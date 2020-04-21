@@ -1,34 +1,36 @@
-export class BaseTimeRelease extends Purse {
-    constructor(periods, periodLength, amount, initiated = Date.now()) {
-        this.periods = periods;
-        this.periodLength = periodLength;
-        this.amount = amount;
-        this.initiated = initiated;
-        // FIXME: harden
+class _BaseTimeRelease extends Payment {
+    constructor(payment, lockedUntil = Date.now()) {
+        this.#payment = payment;
+        this.#lockedUntil = lockedUntil;
     }
-    getCurrentAmount() {
-        const fullPeriodsPassed = Math.floor((currentTime() - this.initiated) / this.periodLength);
-        if(fullPeriodsPassed < _transfer.lockedForPeriods) return 0;
-        if(fullPeriodsPassed >= _transfer.vestedForPeriods) fullPeriodsPassed = _transfer.vestedForPeriods - 1;
-        const perPeriod = _transfer.amount / _transfer.vestedForPeriods;
-        return this.periodAmount * (fullPeriodsPassed + 1); // FIXME: math
+    lockedUntil() {
+        return this.#lockedUntil;
     }
-    // withdraw(amount) {        
-    // }
+    getPayment() {
+        return this.currentTime() >= this.lockedUntil ? this.#payment : null;
+    }
     currentTime() { }
 }
 
-export class TimeRelease extends BaseTimeRelease {
+class _TimeRelease extends BaseTimeRelease {
     currentTime() {
         return Date.now();
     }
 }
 
-export class TestTimeRelease extends BaseTimeRelease {
+class _TestTimeRelease extends BaseTimeRelease {
     setCurrentTime(time) {
         this._currentTime = time;
     }
     currentTime() {
         return this._currentTime;
     }
+}
+
+function makeTimeRelease(payment, lockedUntil = Date.now()) {
+    return harden(new _TimeRelease(payment, lockedUntil));
+}
+
+function makeTestTimeRelease(payment, lockedUntil = Date.now()) {
+    return harden(new _TestTimeRelease(payment, lockedUntil));
 }
