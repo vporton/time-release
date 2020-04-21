@@ -1,13 +1,13 @@
 class _BaseTimeRelease extends Payment {
     constructor(payment, lockedUntil = Date.now()) {
-        this.#payment = payment;
-        this.#lockedUntil = lockedUntil;
-    }
-    lockedUntil() {
-        return this.#lockedUntil;
-    }
-    getPayment() {
-        return this.currentTime() >= this.lockedUntil ? this.#payment : null;
+        let _payment = payment;
+        let _lockedUntil = lockedUntil;
+        this.lockedUntil = function() {
+            return this._lockedUntil;
+        }
+        this.getPayment = function() {
+            return this.currentTime() >= this.lockedUntil ? this._payment : null;
+        }    
     }
     currentTime() { }
 }
