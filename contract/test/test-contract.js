@@ -66,11 +66,11 @@ test('contract with valid offers', async t => {
 
     // Let's use the adminInvite to make an offer. This will allow us
     // to remove our tips at the end
-    const {
-      payout: adminPayoutP,
-      outcome: adminOutcomeP,
-      cancelObj: { cancel: cancelAdmin },
-    } = await E(zoe).offer(adminInvite);
+    // const {
+    //   payout: adminPayoutP,
+    //   outcome: adminOutcomeP,
+    //   cancelObj: { cancel: cancelAdmin },
+    // } = await E(zoe).offer(adminInvite);
 
     // Let's test some of the publicAPI methods. The publicAPI is
     // accessible to anyone who has access to Zoe and the
@@ -87,15 +87,14 @@ test('contract with valid offers', async t => {
     // Let's use the contract like a client and get some encouragement!
     const withdrawalInvite = await E(publicAPI).makeInvite();
 
-    // const { outcome: withdrawalP } = await E(zoe).offer(withdrawalInvite);
     const { outcome: withdrawalP } = await E(zoe).offer(withdrawalInvite);
-
-    // Getting encouragement resolves the 'nextUpdateP' promise
+    
+    // Getting payment resolves the 'nextUpdateP' promise
     nextUpdateP.then(async result => {
       // t.equals(result.value.count, 1, 'count increments by 1');
 
       // Let's get our Tips
-      Promise.resolve(E.G(adminPayoutP).Tip).then(tip => {
+      Promise.resolve(E.G(withdrawalP).Tip).then(tip => {
         bucksIssuer.getAmountOf(tip).then(tipAmount => {
           console.log("ZZZ", tipAmount.amountMath());
           t.deepEquals(tipAmount, 1000, `payout is 1000 bucks, all the tips`);

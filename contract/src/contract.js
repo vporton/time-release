@@ -24,13 +24,15 @@ export const makeContract = harden(zcf => {
         return `Payment made.`;
     };
 
-    const makeInvite = () =>
-        inviteAnOffer(
+    const makeInvite = () => {
+        let invite = inviteAnOffer(
             harden({
                 offerHook: withdrawHook,
                 customProperties: { inviteDesc: 'timed withdrawal' },
-            }),
-    );
+            }));
+        updater.updateState({fundsEscrowed: true});
+        return invite;
+    }
 
     const { notifier, updater } = produceNotifier();
 
