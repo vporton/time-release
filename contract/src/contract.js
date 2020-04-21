@@ -17,6 +17,7 @@ export const makeContract = harden(zcf => {
     const baytownBucks = issuer.getAmountMath().make;
 
     const withdrawHook = offerHandle => {
+        debugger;
         const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
         let holder = makeTestTimeRelease(payment, Date.now());
         const purse = issuer.makeEmptyPurse();

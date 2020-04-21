@@ -65,15 +65,13 @@ test('contract with valid offers', async t => {
 
     // Let's use the adminInvite to make an offer. This will allow us
     // to remove our tips at the end
-    // const {
-    //   payout: adminPayoutP,
-    //   outcome: adminOutcomeP,
-    //   cancelObj: { cancel: cancelAdmin },
-    // } = await E(zoe).offer(adminInvite);
+    const {
+      payout: adminPayoutP,
+      outcome: adminOutcomeP,
+      cancelObj: { cancel: cancelAdmin },
+    } = await E(zoe).offer(adminInvite);
 
     await E(zoe).offer(adminInvite);
-
-    console.log("AAA")
 
     // Let's test some of the publicAPI methods. The publicAPI is
     // accessible to anyone who has access to Zoe and the
