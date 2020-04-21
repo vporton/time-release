@@ -15,10 +15,9 @@ export const makeContract = harden(zcf => {
     const { inviteAnOffer, rejectOffer } = makeZoeHelpers(zcf);
     const { mint: baytownBucksMint, issuer } = produceIssuer('BaytownBucks');
     const baytownBucks = issuer.getAmountMath().make;
-    const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
 
     const withdrawHook = offerHandle => {
-        const payment = baytownBucksMint.mintPayment(baytownBucks);
+        const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
         let holder = makeTestTimeRelease(payment, Date.now());
         const purse = issuer.makeEmptyPurse();
         purse.deposit(payment, baytownBucks);
