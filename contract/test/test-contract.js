@@ -13,6 +13,7 @@ import { makeGetInstanceHandle } from '@agoric/zoe/src/clientSupport';
 const contractPath = `${__dirname}/../src/contract`;
 
 test('contract with valid offers', async t => {
+  debugger;
   // t.plan(10);
   try {
     // Outside of tests, we should use the long-lived Zoe on the
@@ -70,8 +71,6 @@ test('contract with valid offers', async t => {
       outcome: adminOutcomeP,
       cancelObj: { cancel: cancelAdmin },
     } = await E(zoe).offer(adminInvite);
-
-    await E(zoe).offer(adminInvite);
 
     // Let's test some of the publicAPI methods. The publicAPI is
     // accessible to anyone who has access to Zoe and the
