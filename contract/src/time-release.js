@@ -6,7 +6,7 @@ class _BaseTimeRelease {
             return _lockedUntil;
         }
         this.getPayment = function() {
-            return this.currentTime() >= this.lockedUntil ? _payment : null;
+            return this.currentTime() >= _lockedUntil ? _payment : null;
         }    
     }
     currentTime() { }
