@@ -27,10 +27,10 @@ class _TestTimeRelease extends BaseTimeRelease {
     }
 }
 
-function makeTimeRelease(payment, lockedUntil = Date.now()) {
+export function makeTimeRelease(payment, lockedUntil = Date.now()) {
     return harden(new _TimeRelease(payment, lockedUntil));
 }
 
-function makeTestTimeRelease(payment, lockedUntil = Date.now()) {
+export function makeTestTimeRelease(payment, lockedUntil = Date.now()) {
     return harden(new _TestTimeRelease(payment, lockedUntil));
 }
