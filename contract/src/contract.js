@@ -32,10 +32,13 @@ export const makeContract = harden(zcf => {
             }),
     );
 
+    const { notifier, updater } = produceNotifier();
+
     return harden({
         invite: makeInvite(),
         publicAPI: {
             makeInvite,
+            getNotifier: () => notifier, // TODO: Rename.
         },
     });
 });

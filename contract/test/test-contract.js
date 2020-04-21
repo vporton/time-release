@@ -83,9 +83,9 @@ test('contract with valid offers', async t => {
     const instanceRecord = await E(zoe).getInstance(instanceHandle);
     const { publicAPI } = instanceRecord;
 
-    // const notifier = publicAPI.getNotifier();
-    // const { value, updateHandle } = notifier.getUpdateSince();
-    // const nextUpdateP = notifier.getUpdateSince(updateHandle);
+    const notifier = publicAPI.getNotifier();
+    const { value, updateHandle } = notifier.getUpdateSince();
+    const nextUpdateP = notifier.getUpdateSince(updateHandle);
 
     // Let's use the contract like a client and get some encouragement!
     const withdrawalInvite = await E(publicAPI).makeInvite();
