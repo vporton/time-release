@@ -71,11 +71,17 @@ export const makeContract = harden(zcf => {
       .then(() => {
         const auditoriumOfferHook = offerHandle => {
           auditoriumOfferHandle = offerHandle;
+          const purse = issuer.makeEmptyPurse();
+          const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
+          purse.deposit(payment/*, baytownBucks(1000)*/);
           // the contract transfers tickets to the auditorium leveraging Zoe offer safety
+          console.log('purse =', purse.getCurrentAmount())
+          console.log('current =', zcf.getCurrentAllocation(auditoriumOfferHandle))
           zcf.reallocate(
             [auditoriumOfferHandle],
             [
               zcf.getCurrentAllocation(auditoriumOfferHandle),
+              //{ Ticket: purse.getCurrentAmount() },
             ],
           );
           zcf.complete([auditoriumOfferHandle]);
