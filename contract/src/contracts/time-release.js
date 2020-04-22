@@ -1,4 +1,11 @@
-class _BaseTimeRelease {
+// class _BaseTimeRelease {
+//     currentTime() { }
+// }
+
+// _BaseTimeRelease = harden(_BaseTimeRelease);
+
+
+class _TimeRelease {
     constructor(payment, lockedUntil = Date.now()) {
         let _payment = payment;
         let _lockedUntil = lockedUntil;
@@ -7,21 +14,24 @@ class _BaseTimeRelease {
         }
         this.getPayment = function() {
             return this.currentTime() >= _lockedUntil ? _payment : null;
-        }    
+        }
     }
-    currentTime() { }
-}
-
-_BaseTimeRelease = harden(_BaseTimeRelease);
-
-
-class _TimeRelease extends _BaseTimeRelease {
     currentTime() {
         return Date.now();
     }
 }
 
-class _TestTimeRelease extends _BaseTimeRelease {
+class _TestTimeRelease {
+    constructor(payment, lockedUntil = Date.now()) {
+        let _payment = payment;
+        let _lockedUntil = lockedUntil;
+        this.lockedUntil = function() {
+            return _lockedUntil;
+        }
+        this.getPayment = function() {
+            return this.currentTime() >= _lockedUntil ? _payment : null;
+        }
+    }
     setCurrentTime(time) {
         this._currentTime = time;
     }

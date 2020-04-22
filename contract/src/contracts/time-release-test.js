@@ -29,7 +29,12 @@ export const makeContract = harden(zcf => {
     // the contract creates an offer {give: tickets, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
       const lockedPayment = mint1.mintPayment(baytownBucks(1000));
-      const lock = makeTestTimeRelease(lockedPayment);
+      let date = new Date();
+      let date2 = new Date(date);
+      date2.setFullYear(date2.getFullYear() + 10); // I hope we won't stay 10 years paused
+      const lock = makeTestTimeRelease(lockedPayment, date2);
+    //   lock.setCurrentTime()
+
       const ticketsAmount = wrapperToken(harden([harden({timeLock: lock})]));
       const ticketsPayment = mint.mintPayment(ticketsAmount);
       let tempContractHandle;
