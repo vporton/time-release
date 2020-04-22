@@ -8,12 +8,13 @@ import { makeTestTimeRelease } from './time-release';
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
 export const makeContract = harden(zcf => {
   // Create the internal token mint
-  const { issuer: issuer1, mint: mint1 } = produceIssuer('BaytownBucks');
-  const { issuer, mint } = produceIssuer(
+  const { issuer: issuer1, mint: mint1, amountMath: amountMath1 } = produceIssuer('BaytownBucks');
+  const { issuer, mint, amountMath } = produceIssuer(
     'Futures',
     'set',
   );
-  const baytownBucks = issuer1.getAmountMath().make;
+  const baytownBucks = amountMath1.make;
+  const wrapperToken = amountMath.make;
 
 //   const {
 //     terms: { timeLock },
@@ -29,7 +30,7 @@ export const makeContract = harden(zcf => {
     const offerHook = userOfferHandle => {
       const lockedPayment = mint1.mintPayment(baytownBucks(1000));
       const lock = makeTestTimeRelease(lockedPayment);
-      const ticketsAmount = issuer.getAmountMath().make(harden([harden({timeLock: lock})]));
+      const ticketsAmount = wrapperToken(harden([harden({timeLock: lock})]));
       const ticketsPayment = mint1.mintPayment(ticketsAmount);
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
