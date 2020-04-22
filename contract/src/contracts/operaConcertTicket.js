@@ -37,7 +37,7 @@ export const makeContract = harden(zcf => {
   //   issuerKeywordRecord: { Money: moneyIssuer },
   // } = zcf.getInstanceRecord();
 
-  const moneyAmountMath = zcf.getAmountMaths(harden(['Token'])).Token;
+  // const moneyAmountMath = zcf.getAmountMaths(harden(['Token'])).Token;
   // const { amountMath: moneyAmountMath } = zcf.getIssuerRecord(moneyIssuer);
 
   let auditoriumOfferHandle;
