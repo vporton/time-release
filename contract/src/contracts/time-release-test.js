@@ -31,7 +31,7 @@ export const makeContract = harden(zcf => {
       const lockedPayment = mint1.mintPayment(baytownBucks(1000));
       const lock = makeTestTimeRelease(lockedPayment);
       const ticketsAmount = wrapperToken(harden([harden({timeLock: lock})]));
-      const ticketsPayment = mint1.mintPayment(ticketsAmount);
+      const ticketsPayment = mint.mintPayment(ticketsAmount);
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
         offerHandle => (tempContractHandle = offerHandle),
