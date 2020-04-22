@@ -5,6 +5,9 @@ import produceIssuer from '@agoric/ertp';
 import { makeTimeRelease } from './time-release';
 
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
+/**
+ * @type {import('@agoric/zoe').MakeContract}
+ */
 export const makeContract = harden(zcf => {
   // Create the internal token mint
   const { issuer: wrapperIssuer, mint: wrapperMint, amountMath: wrapperAmountMath } = produceIssuer('BaytownBucks');
