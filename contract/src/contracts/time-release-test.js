@@ -3,7 +3,7 @@ import harden from '@agoric/harden';
 import produceIssuer from '@agoric/ertp';
 import { makeZoeHelpers } from '/home/porton/Projects/bounties/agoric-sdk/packages/zoe/src/contractSupport'; // FIXME
 
-import './time-release';
+import { makeTestTimeRelease } from './time-release';
 
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
 export const makeContract = harden(zcf => {
@@ -13,7 +13,7 @@ export const makeContract = harden(zcf => {
     'Futures',
     'set',
   );
-  const baytownBucks = issuer.getAmountMath().make;
+  const baytownBucks = issuer1.getAmountMath().make;
 
 //   const {
 //     terms: { timeLock },
@@ -27,10 +27,10 @@ export const makeContract = harden(zcf => {
 
     // the contract creates an offer {give: tickets, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
-      const lockedPayment = mint1.mintPayment(issuer1.getAmountMath().make(100));
-      const lock = makeTestTimeRelease(payment, lockedUntil = Date.now());
+      const lockedPayment = mint1.mintPayment(baytownBucks(100));
+      const lock = makeTestTimeRelease(lockedPayment);
       const ticketsAmount = baytownBucks(harden([harden({timeLock: lock})]));
-      const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
+      const ticketsPayment = mint1.mintPayment(ticketsAmount);
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
         offerHandle => (tempContractHandle = offerHandle),
