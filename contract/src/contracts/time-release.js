@@ -14,7 +14,7 @@ class _TimeRelease {
             return _offer && E(zoe).isOfferActive(_offer) && Date.now() >= _lockedUntil ? _payment : null;
         }
         // SECURITY: Don't forget to call this function,
-        // otherwise the payment can be withdrawn even if offer is not accepted!
+        // otherwise getPayment() will always return null.
         this.setOffer = function(offer) {
             _offer = offer;
         }
