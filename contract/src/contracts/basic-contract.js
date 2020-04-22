@@ -14,10 +14,12 @@ export const makeContract = harden(zcf => {
     const offerHook = userOfferHandle => {
       const ticketsAmount = baytownBucks(1000);
       const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
+
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
         offerHandle => (tempContractHandle = offerHandle),
       );
+
       zcf
         .getZoeService()
         .offer(

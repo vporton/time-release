@@ -26,10 +26,12 @@ export const makeContract = harden(zcf => {
 
       const ticketsAmount = wrapperToken(harden([harden({timeLock: lock})]));
       const ticketsPayment = mint.mintPayment(ticketsAmount);
+
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
         offerHandle => (tempContractHandle = offerHandle),
       );
+
       zcf
         .getZoeService()
         .offer(
