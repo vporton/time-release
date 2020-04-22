@@ -10,8 +10,6 @@ export const makeContract = harden(zcf => {
   const { mint: baytownBucksMint, issuer } = currencyIssuer;
   const baytownBucks = issuer.getAmountMath().make;
 
-  let auditoriumOfferHandle;
-
   return zcf.addNewIssuer(issuer, 'Ticket').then(() => {
     // Mint the tickets ahead-of-time (instead of on-demand)
     // This way, they can be passed to Zoe + ERTP who will be doing the bookkeeping
