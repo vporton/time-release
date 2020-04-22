@@ -44,6 +44,10 @@ export const makeContract = harden(zcf => {
           harden({ give: { Wrapper: wrapperAmount } }),
           harden({ Wrapper: ticketsPayment }),
         ).then(() => {
+          // Security measure: see time-release.js!!
+          lock1.setOffer(tempContractHandle);
+          lock2.setOffer(tempContractHandle);
+
           zcf.reallocate(
             [tempContractHandle, userOfferHandle],
             [
