@@ -92,6 +92,7 @@ export const makeContract = harden(zcf => {
         invite2: zcf.makeInvitation(offerHook),
         //makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
         currency: baytownBucks, // FIXME: security
+        issuer: issuer,
       },
     });
   });

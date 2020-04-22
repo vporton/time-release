@@ -39,16 +39,12 @@ test(`Zoe opera ticket contract`, async t => {
                       cancelObj: { cancel: complete },
                       offerHandle,
                     }) => {
-                      const { currentAllocation } = await E(zoe).getOffer(
-                        await offerHandle,
+                      const amount = await E(publicAPI.issuer).getAmountOf((await payout).Ticket);
+                      t.equal(
+                        amount.extent,
+                        1000,
+                        `got 1000 tokens`,
                       );
-
-                      console.log("currentAllocation:", currentAllocation);
-                      // t.equal(
-                      //   currentAllocation.Token.extent,
-                      //   1000,
-                      //   `got 1000 tokens`,
-                      // );
 
                       return {
                         publicAPI,
