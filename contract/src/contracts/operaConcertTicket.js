@@ -57,46 +57,42 @@ export const makeContract = harden(zcf => {
     const ticketsAmount = baytownBucks(1000);
     const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
 
-    const contractSelfInvite = zcf.makeInvitation(
-      offerHandle => {}
-    );
     // the contract creates an offer {give: tickets, want: nothing} with the tickets
-    return zcf
-      .getZoeService()
-      .offer(
-        contractSelfInvite,
-        harden({ give: { Ticket: ticketsAmount } }),
-        harden({ Ticket: ticketsPayment }),
-      )
-      .then(() => {
-        const auditoriumOfferHook = offerHandle => {
-          auditoriumOfferHandle = offerHandle;
-          const purse = issuer.makeEmptyPurse();
-          const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
-          purse.deposit(payment/*, baytownBucks(1000)*/);
+    const offerHook = userOfferHandle => {
+      const ticketsAmount = baytownBucks(1000);
+      const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
+      let tempContractHandle;
+      const contractSelfInvite = zcf.makeInvitation(
+        offerHandle => (tempContractHandle = offerHandle),
+      );
+      zcf
+        .getZoeService()
+        .offer(
+          contractSelfInvite,
+          harden({ give: { Ticket: ticketsAmount } }),
+          harden({ Ticket: ticketsPayment }),
+        ).then(() => {
           // the contract transfers tickets to the auditorium leveraging Zoe offer safety
-          console.log('purse =', purse.getCurrentAmount())
-          console.log('current =', zcf.getCurrentAllocation(auditoriumOfferHandle))
+          // console.log(zcf.getCurrentAllocation(userOfferHandle),
+          //             zcf.getCurrentAllocation(tempContractHandle))
           zcf.reallocate(
-            [auditoriumOfferHandle],
+            [tempContractHandle, userOfferHandle],
             [
-              zcf.getCurrentAllocation(auditoriumOfferHandle),
-              //{ Ticket: purse.getCurrentAmount() },
+              zcf.getCurrentAllocation(userOfferHandle),
+              zcf.getCurrentAllocation(tempContractHandle),
             ],
           );
-          zcf.complete([auditoriumOfferHandle]);
-          // the auditoriumOfferHandle is now associated with the
-          // tickets and the contract offer is gone from the contract
-          return `Payment accepted.`;
-        };
-
-        return harden({
-          invite: zcf.makeInvitation(auditoriumOfferHook),
-          publicAPI: {
-            //makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
-            getTicketIssuer: () => issuer, // FIXME: security
-          },
+          zcf.complete([tempContractHandle, userOfferHandle]);
+          return `Payment scheduled.`;
         });
-      });
+    }
+    return harden({
+      invite: zcf.makeInvitation(offerHook),
+      publicAPI: {
+        invite2: zcf.makeInvitation(offerHook),
+        //makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
+        getTicketIssuer: () => issuer, // FIXME: security
+      },
+    });
   });
 });
