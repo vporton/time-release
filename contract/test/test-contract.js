@@ -29,17 +29,13 @@ test(`Zoe opera ticket contract`, async t => {
       const installationHandle = zoe.install(source, moduleFormat);
 
       return zoe
-        .makeInstance(installationHandle, harden({ Money: moolaIssuer }), {
-          show: 'Steven Universe, the Opera',
-          start: 'Web, March 25th 2020 at 8pm',
-          count: 3,
-          expectedAmountPerTicket,
-        })
+        .makeInstance(installationHandle, harden({ Token: moolaIssuer }))
         .then(auditoriumInvite => {
           return inviteIssuer
             .getAmountOf(auditoriumInvite)
             .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
               const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
+              console.log(publicAPI)
 
               // The auditorium makes an offer.
               return (
@@ -77,46 +73,27 @@ test(`Zoe opera ticket contract`, async t => {
     },
   );
 
-  const alicePartFinished = contractReadyP.then(({ publicAPI }) => {
-    const ticketIssuer = publicAPI.getTicketIssuer();
-    const ticketAmountMath = ticketIssuer.getAmountMath();
+  // return contractReadyP.then(({ publicAPI }) => {
+  //   console.log(publicAPI);
+  //   const ticketIssuer = publicAPI.getTicketIssuer();
+  //   const ticketAmountMath = ticketIssuer.getAmountMath();
 
-    // === Alice part ===
-    // Alice starts with 100 moolas
-    const alicePurse = moolaIssuer.makeEmptyPurse();
-    alicePurse.deposit(moolaMint.mintPayment(moola(100)));
+  //   // === Alice part ===
+  //   // Alice starts with 100 moolas
+  //   const alicePurse = moolaIssuer.makeEmptyPurse();
+  //   alicePurse.deposit(moolaMint.mintPayment(moola(100)));
 
-    // Alice makes an invite
-    const aliceInvite = inviteIssuer.claim(publicAPI.makeBuyerInvite());
-    return inviteIssuer
-      .getAmountOf(aliceInvite)
-      .then(({ extent: [{ instanceHandle: aliceHandle }] }) => {
-        const { terms: termsOfAlice } = zoe.getInstanceRecord(aliceHandle);
-      });
-  });
-
-  return Promise.all([contractReadyP])
-    .then(([{ publicAPI, operaPayout, complete }]) => {
-      // === Final Opera part ===
-      // getting the money back
-      const availableTickets = publicAPI.getAvailableTickets();
-
-      const operaPurse = moolaIssuer.makeEmptyPurse();
-
-      const done = operaPayout.then(payout => {
-        return payout.Money.then(moneyPayment => {
-          return operaPurse.deposit(moneyPayment);
-        }).then(() => {
-        });
-      });
-
-      complete();
-
-      return done;
-    })
-    .catch(err => {
-      console.error('Error in last Opera part', err);
-      t.fail('error');
-    })
-    .then(() => t.end());
+  //   // Alice makes an invite
+  //   const aliceInvite = inviteIssuer.claim(publicAPI.makeBuyerInvite());
+  //   return inviteIssuer
+  //     .getAmountOf(aliceInvite)
+  //     .then(({ extent: [{ instanceHandle: aliceHandle }] }) => {
+  //       const { terms: termsOfAlice } = zoe.getInstanceRecord(aliceHandle);
+  //     });
+  // })
+  // .catch(err => {
+  //   console.error('Error in last Opera part', err);
+  //   t.fail('error');
+  // })
+  // .then(() => t.end());
 });

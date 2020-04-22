@@ -28,17 +28,17 @@ import { makeZoeHelpers } from '/home/porton/Projects/bounties/agoric-sdk/packag
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
 export const makeContract = harden(zcf => {
   // Create the internal ticket mint
-  const { issuer, mint, amountMath: ticketAmountMath } = produceIssuer(
-    'Opera tickets',
-    'set',
-  );
+  const currencyIssuer = produceIssuer('BaytownBucks')
+  const { mint: baytownBucksMint, issuer } = currencyIssuer;
+  const baytownBucks = issuer.getAmountMath().make;
 
-  const {
-    terms: { show, start, count, expectedAmountPerTicket },
-    issuerKeywordRecord: { Money: moneyIssuer },
-  } = zcf.getInstanceRecord();
+  // const {
+  //   // terms: { show, start, count, expectedAmountPerTicket },
+  //   issuerKeywordRecord: { Money: moneyIssuer },
+  // } = zcf.getInstanceRecord();
 
-  const { amountMath: moneyAmountMath } = zcf.getIssuerRecord(moneyIssuer);
+  const moneyAmountMath = zcf.getAmountMaths(harden(['Token'])).Token;
+  // const { amountMath: moneyAmountMath } = zcf.getIssuerRecord(moneyIssuer);
 
   let auditoriumOfferHandle;
 
@@ -54,8 +54,8 @@ export const makeContract = harden(zcf => {
     // Mint the tickets ahead-of-time (instead of on-demand)
     // This way, they can be passed to Zoe + ERTP who will be doing the bookkeeping
     // of which tickets have been sold and which tickets are still for sale
-    const ticketsAmount = ticketAmountMath.make(1000);
-    const ticketsPayment = mint.mintPayment(ticketsAmount);
+    const ticketsAmount = issuer.getAmountMath().make(1000);
+    const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
 
     let internalTicketSupplyHandle;
     const internalTicketSupplyOfferHook = offerHandle =>
