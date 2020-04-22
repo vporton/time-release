@@ -10,22 +10,6 @@ import { makeZoe } from '@agoric/zoe';
 
 const operaConcertTicketRoot = `${__dirname}/../src/contracts/operaConcertTicket.js`;
 
-// __Test Scenario__
-
-// The Opera de Bordeaux plays the contract creator and the auditorium
-// It creates the contract for a show ("Steven Universe, the Opera", Web, March 25th 2020 at 8pm, 3 tickets)
-// The Opera wants 22 moolas per ticket
-
-// Alice buys ticket #1
-
-// Then, the Joker tries malicious things:
-// - they try to buy again ticket #1 (and will fail)
-// - they try to buy to buy ticket #2 for 1 moola (and will fail)
-
-// Then, Bob tries to buy ticket 1 and fails. He buys ticket #2 and #3
-
-// The Opera is told about the show being sold out. It gets all the moolas from the sale
-
 test(`Zoe opera ticket contract`, async t => {
   // Setup initial conditions
   const {
@@ -57,22 +41,6 @@ test(`Zoe opera ticket contract`, async t => {
             .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
               const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
 
-              t.equal(
-                typeof publicAPI.makeBuyerInvite,
-                'function',
-                'publicAPI.makeBuyerInvite should be a function',
-              );
-              t.equal(
-                typeof publicAPI.getTicketIssuer,
-                'function',
-                'publicAPI.getTicketIssuer should be a function',
-              );
-              t.equal(
-                typeof publicAPI.getAvailableTickets,
-                'function',
-                'publicAPI.getAvailableTickets should be a function',
-              );
-
               // The auditorium makes an offer.
               return (
                 // Note that the proposal here is empty
@@ -92,24 +60,8 @@ test(`Zoe opera ticket contract`, async t => {
                       cancelObj: { cancel: complete },
                       offerHandle,
                     }) => {
-                      t.equal(
-                        await auditoriumOutcomeP,
-                        `Payment accepted.`,
-                      );
-                      t.equal(
-                        typeof complete,
-                        'function',
-                        'complete should be a function',
-                      );
-
                       const { currentAllocation } = await E(zoe).getOffer(
                         await offerHandle,
-                      );
-
-                      t.equal(
-                        currentAllocation.Ticket.extent.length,
-                        3,
-                        `the auditorium offerHandle should be associated with the 3 tickets`,
                       );
 
                       return {
@@ -140,75 +92,31 @@ test(`Zoe opera ticket contract`, async t => {
       .getAmountOf(aliceInvite)
       .then(({ extent: [{ instanceHandle: aliceHandle }] }) => {
         const { terms: termsOfAlice } = zoe.getInstanceRecord(aliceHandle);
-        // Alice checks terms
-        t.equal(termsOfAlice.show, 'Steven Universe, the Opera');
-        t.equal(termsOfAlice.start, 'Web, March 25th 2020 at 8pm');
-        t.equal(termsOfAlice.expectedAmountPerTicket.brand, moola(22).brand);
-        t.equal(termsOfAlice.expectedAmountPerTicket.extent, moola(22).extent);
-
-        const availableTickets = publicAPI.getAvailableTickets();
-        // and sees the currently available tickets
-        t.equal(
-          availableTickets.length,
-          3,
-          'Alice should see 3 available tickets',
-        );
-        t.ok(
-          availableTickets.find(ticket => ticket.number === 1),
-          `availableTickets contains ticket number 1`,
-        );
-        t.ok(
-          availableTickets.find(ticket => ticket.number === 2),
-          `availableTickets contains ticket number 2`,
-        );
-        t.ok(
-          availableTickets.find(ticket => ticket.number === 3),
-          `availableTickets contains ticket number 3`,
-        );
-
-        // find the extent corresponding to ticket #1
-        const ticket1Extent = availableTickets.find(
-          ticket => ticket.number === 1,
-        );
-        // make the corresponding amount
-        const ticket1Amount = ticketAmountMath.make(harden([ticket1Extent]));
-
-        const aliceProposal = harden({
-          give: { Money: termsOfAlice.expectedAmountPerTicket },
-          want: { Ticket: ticket1Amount },
-        });
-
-        const alicePaymentForTicket = alicePurse.withdraw(
-          termsOfAlice.expectedAmountPerTicket,
-        );
-
-        return zoe
-          .offer(aliceInvite, aliceProposal, {
-            Money: alicePaymentForTicket,
-          })
-          .then(({ payout: payoutP }) => {
-            return payoutP.then(alicePayout => {
-              return ticketIssuer
-                .claim(alicePayout.Ticket)
-                .then(aliceTicketPayment => {
-                  return ticketIssuer
-                    .getAmountOf(aliceTicketPayment)
-                    .then(aliceBoughtTicketAmount => {
-                      t.equal(
-                        aliceBoughtTicketAmount.extent[0].show,
-                        'Steven Universe, the Opera',
-                        'Alice should have receieved the ticket for the correct show',
-                      );
-                      t.equal(
-                        aliceBoughtTicketAmount.extent[0].number,
-                        1,
-                        'Alice should have received the ticket for the correct number',
-                      );
-                    });
-                });
-            });
-          });
       });
   });
 
+  return Promise.all([contractReadyP])
+    .then(([{ publicAPI, operaPayout, complete }]) => {
+      // === Final Opera part ===
+      // getting the money back
+      const availableTickets = publicAPI.getAvailableTickets();
+
+      const operaPurse = moolaIssuer.makeEmptyPurse();
+
+      const done = operaPayout.then(payout => {
+        return payout.Money.then(moneyPayment => {
+          return operaPurse.deposit(moneyPayment);
+        }).then(() => {
+        });
+      });
+
+      complete();
+
+      return done;
+    })
+    .catch(err => {
+      console.error('Error in last Opera part', err);
+      t.fail('error');
+    })
+    .then(() => t.end());
 });
