@@ -15,16 +15,7 @@ export const makeContract = harden(zcf => {
   const baytownBucks = wrapperAmountMath.make;
   const wrapperToken = amountMath.make;
 
-//   const {
-//     terms: { timeLock },
-//   } = zcf.getInstanceRecord();
-
   return zcf.addNewIssuer(issuer, 'Token').then(() => {
-    // Mint the tickets ahead-of-time (instead of on-demand)
-    // This way, they can be passed to Zoe + ERTP who will be doing the bookkeeping
-    // of which tickets have been sold and which tickets are still for sale
-    // const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
-
     // the contract creates an offer {give: tickets, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
       const lockedPayment = wrapperMint.mintPayment(baytownBucks(1000));
@@ -60,7 +51,6 @@ export const makeContract = harden(zcf => {
     return harden({
       invite: zcf.makeInvitation(offerHook),
       publicAPI: {
-        //invite2: zcf.makeInvitation(offerHook),
         currency: wrapperToken,
         issuer: issuer,
       },

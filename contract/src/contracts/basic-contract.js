@@ -45,7 +45,6 @@ export const makeContract = harden(zcf => {
     return harden({
       invite: zcf.makeInvitation(offerHook),
       publicAPI: {
-        // invite2: zcf.makeInvitation(offerHook),
         currency: baytownBucks,
         issuer: issuer,
       },
