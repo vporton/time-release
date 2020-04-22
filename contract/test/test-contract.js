@@ -93,7 +93,7 @@ test('contract with valid offers', async t => {
       console.log("AAA", E.G(withdrawalP))
 
       // Let's get our Tips
-      Promise.resolve(E.G(withdrawalP)/*.Tip*/).then(tip => {
+      Promise.resolve(E.G(withdrawalP).Token).then(tip => {
         console.log("BBB", tip);
         bucksIssuer.getAmountOf(tip).then(tipAmount => {
           console.log("ZZZ", tipAmount.amountMath());
