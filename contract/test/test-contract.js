@@ -20,48 +20,76 @@ test(`Zoe opera ticket contract`, async t => {
     ({ source, moduleFormat }) => {
       const installationHandle = zoe.install(source, moduleFormat);
 
-      return zoe
-        .makeInstance(installationHandle)
-        .then(auditoriumInvite => {
-          return inviteIssuer
-            .getAmountOf(auditoriumInvite)
-            .then(x => {console.log(x); return x})
-            .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
-              const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
-
-              // The auditorium makes an offer.
-              return (
-                // Note that the proposal here is empty
-                // This is due to a current limitation in proposal expressivness: https://github.com/Agoric/agoric-sdk/issues/855
-                // It's impossible to know in advance how many tickets will be sold, so it's not possible
-                // to say `want: moola(3*22)`
-                // in a future version of Zoe, it will be possible to express:
-                // "i want n times moolas where n is the number of sold tickets"
-                zoe
-                  .offer(auditoriumInvite, harden({}))
-                  // cancel will be renamed complete: https://github.com/Agoric/agoric-sdk/issues/835
-                  // cancelObj exists because of a current limitation in @agoric/marshal : https://github.com/Agoric/agoric-sdk/issues/818
-                  .then(
-                    // async ({
-                    //   outcome: auditoriumOutcomeP,
-                    //   payout,
-                    //   cancelObj: { cancel: complete },
-                    //   offerHandle,
-                    // }) => {
-                    //   const { currentAllocation } = await E(zoe).getOffer(
-                    //     await offerHandle,
-                    //   );
-
-                    //   return {
-                    //     publicAPI,
-                    //     operaPayout: payout,
-                    //     complete,
-                    //   };
-                    // },
-                  )
-              );
-            });
+      // const offerHook = userOfferHandle => {
+        const ticketsAmount = baytownBucks(10001);
+        const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
+        let tempContractHandle;
+        const contractSelfInvite = zcf.makeInvitation(
+          offerHandle => (tempContractHandle = offerHandle),
+        );
+        zcf
+          .getZoeService()
+          .offer(
+            contractSelfInvite,
+            harden({ take: { Ticket: ticketsAmount } }),
+            harden({ Ticket: ticketsPayment }),
+          ).then(() => {
+            // the contract transfers tickets to the auditorium leveraging Zoe offer safety
+            zcf.reallocate(
+              [tempContractHandle, userOfferHandle],
+              [
+  
+                zcf.getCurrentAllocation(userOfferHandle),
+                zcf.getCurrentAllocation(tempContractHandle),
+              ],
+            );
+            zcf.complete([tempContractHandle, userOfferHandle]);
+            return `Test!`;
         });
+    // }
+
+      // return zoe
+      //   .makeInstance(installationHandle)
+      //   .then(auditoriumInvite => {
+      //     return inviteIssuer
+      //       .getAmountOf(auditoriumInvite)
+      //       .then(x => {console.log(x); return x})
+      //       .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
+      //         const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
+
+      //         // The auditorium makes an offer.
+      //         return (
+      //           // Note that the proposal here is empty
+      //           // This is due to a current limitation in proposal expressivness: https://github.com/Agoric/agoric-sdk/issues/855
+      //           // It's impossible to know in advance how many tickets will be sold, so it's not possible
+      //           // to say `want: moola(3*22)`
+      //           // in a future version of Zoe, it will be possible to express:
+      //           // "i want n times moolas where n is the number of sold tickets"
+      //           zoe
+      //             .offer(auditoriumInvite, harden({}))
+      //             // cancel will be renamed complete: https://github.com/Agoric/agoric-sdk/issues/835
+      //             // cancelObj exists because of a current limitation in @agoric/marshal : https://github.com/Agoric/agoric-sdk/issues/818
+      //             .then(
+      //               // async ({
+      //               //   outcome: auditoriumOutcomeP,
+      //               //   payout,
+      //               //   cancelObj: { cancel: complete },
+      //               //   offerHandle,
+      //               // }) => {
+      //               //   const { currentAllocation } = await E(zoe).getOffer(
+      //               //     await offerHandle,
+      //               //   );
+
+      //               //   return {
+      //               //     publicAPI,
+      //               //     operaPayout: payout,
+      //               //     complete,
+      //               //   };
+      //               // },
+      //             )
+      //         );
+      //       });
+      //   });
     },
   )
   .catch(err => {
