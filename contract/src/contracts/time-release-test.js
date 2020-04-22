@@ -40,7 +40,7 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Ticket: lock } }),
+          harden({ give: { Ticket: ticketsAmount } }),
           harden({ Ticket: ticketsPayment }),
         ).then(() => {
           zcf.reallocate(
@@ -58,7 +58,7 @@ export const makeContract = harden(zcf => {
       invite: zcf.makeInvitation(offerHook),
       publicAPI: {
         invite2: zcf.makeInvitation(offerHook), // FIXME
-        currency: baytownBucks, // FIXME: security
+        currency: wrapperToken, // FIXME: security
         issuer: issuer,
       },
     });
