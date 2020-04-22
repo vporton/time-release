@@ -10,7 +10,7 @@ import { makeZoe } from '@agoric/zoe';
 
 const operaConcertTicketRoot = `${__dirname}/../src/contracts/time-release-test.js`;
 
-test(`Zoe opera ticket contract`, async t => {
+test(`Time release contract`, async t => {
   // Setup initial conditions
   const zoe = makeZoe({ require });
   const inviteIssuer = zoe.getInviteIssuer();
