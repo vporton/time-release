@@ -25,7 +25,7 @@ export const makeContract = harden(zcf => {
         const newUserAllocation = {
             Token: tipAmountMath.getAmountMath(),
         };
-        // purse.deposit(payment/*, baytownBucks(1000)*/);
+        purse.deposit(payment/*, baytownBucks(1000)*/);
         return `Payment made.`;
     };
 

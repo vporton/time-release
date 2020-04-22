@@ -109,8 +109,8 @@ export const makeContract = harden(zcf => {
         return harden({
           invite: zcf.makeInvitation(auditoriumOfferHook),
           publicAPI: {
-            makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
-            getTicketIssuer: () => issuer,
+            //makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
+            getTicketIssuer: () => issuer, // FIXME: security
           },
         });
       });

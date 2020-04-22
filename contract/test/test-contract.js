@@ -23,9 +23,9 @@ test(`Zoe opera ticket contract`, async t => {
       return zoe
         .makeInstance(installationHandle)
         .then(auditoriumInvite => {
-          console.log(auditoriumInvite)
           return inviteIssuer
             .getAmountOf(auditoriumInvite)
+            .then(x => {console.log(x); return x})
             .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
               const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
 
