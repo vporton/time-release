@@ -18,10 +18,12 @@ export const makeContract = harden(zcf => {
   return zcf.addNewIssuer(issuer, 'Wrapper').then(() => {
     // the contract creates an offer {give: wrapper, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
+      // Do a payment right now:
       const lockedPayment1 = wrapperMint.mintPayment(baytownBucks(1000));
       let date = new Date();
       const lock1 = makeTimeRelease(lockedPayment1, date);
 
+      // Allow a payment after 10 years:
       const lockedPayment2 = wrapperMint.mintPayment(baytownBucks(2000));
       let date2 = new Date(date);
       date2.setFullYear(date2.getFullYear() + 10); // I hope we won't stay 10 years paused
