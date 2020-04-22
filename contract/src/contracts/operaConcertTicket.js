@@ -57,9 +57,7 @@ export const makeContract = harden(zcf => {
     const ticketsAmount = issuer.getAmountMath().make(1000);
     const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
 
-    let internalTicketSupplyHandle;
-    const internalTicketSupplyOfferHook = offerHandle =>
-      (internalTicketSupplyHandle = offerHandle);
+    const internalTicketSupplyOfferHook = offerHandle => { };
 
     const contractSelfInvite = zcf.makeInvitation(
       internalTicketSupplyOfferHook,
@@ -77,13 +75,12 @@ export const makeContract = harden(zcf => {
           auditoriumOfferHandle = offerHandle;
           // the contract transfers tickets to the auditorium leveraging Zoe offer safety
           zcf.reallocate(
-            [internalTicketSupplyHandle, auditoriumOfferHandle],
+            [auditoriumOfferHandle],
             [
               zcf.getCurrentAllocation(auditoriumOfferHandle),
-              zcf.getCurrentAllocation(internalTicketSupplyHandle),
             ],
           );
-          zcf.complete([internalTicketSupplyHandle]);
+          zcf.complete([]);
           // the auditoriumOfferHandle is now associated with the
           // tickets and the contract offer is gone from the contract
           return `Payment accepted.`;

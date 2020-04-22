@@ -32,6 +32,7 @@ test(`Zoe opera ticket contract`, async t => {
           return inviteIssuer
             .getAmountOf(auditoriumInvite)
             .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
+              console.log(auditoriumHandle)
               const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
 
               // The auditorium makes an offer.
