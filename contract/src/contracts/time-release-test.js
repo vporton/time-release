@@ -18,14 +18,17 @@ export const makeContract = harden(zcf => {
   return zcf.addNewIssuer(issuer, 'Token').then(() => {
     // the contract creates an offer {give: wrapper, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
-      const lockedPayment = wrapperMint.mintPayment(baytownBucks(1000));
+      const lockedPayment1 = wrapperMint.mintPayment(baytownBucks(1000));
       let date = new Date();
+      const lock1 = makeTimeRelease(lockedPayment1, date);
+
+      const lockedPayment2 = wrapperMint.mintPayment(baytownBucks(2000));
       let date2 = new Date(date);
       date2.setFullYear(date2.getFullYear() + 10); // I hope we won't stay 10 years paused
-      const lock = makeTimeRelease(lockedPayment, date2);
+      const lock2 = makeTimeRelease(lockedPayment2, date2);
 
-      const ticketsAmount = wrapperToken(harden([harden({timeLock: lock})]));
-      const ticketsPayment = mint.mintPayment(ticketsAmount);
+      const wrapperAmount = wrapperToken(harden([harden({timeLock1: lock1, timeLock2: lock2})]));
+      const ticketsPayment = mint.mintPayment(wrapperAmount);
 
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
@@ -36,7 +39,7 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Token: ticketsAmount } }),
+          harden({ give: { Token: wrapperAmount } }),
           harden({ Token: ticketsPayment }),
         ).then(() => {
           zcf.reallocate(

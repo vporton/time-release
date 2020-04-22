@@ -40,9 +40,14 @@ test(`Time release contract`, async t => {
                       offerHandle,
                     }) => {
                       const amount = await E(publicAPI.issuer).getAmountOf((await payout).Token);
-                      let timeLock = amount.extent[0].timeLock;
-                      console.log(timeLock.getPayment());
-                    //   t.notEqual(timeLock.getPayment(), null);
+                      let timeLock1 = amount.extent[0].timeLock1;
+                      let timeLock2 = amount.extent[0].timeLock2;
+                      let payment1 = timeLock1.getPayment();
+                      let payment2 = timeLock2.getPayment();
+
+                      t.notEqual(payment1, null, `Payment 1 is not null`);
+                      t.notEqual(payment1.getAllegedBrand, null, `It is really a payment.`)
+                      t.equal(payment2, null, `Payment 1 is null`); // will be false after 10 years
 
                     //   t.equal(
                     //     amount.extent,
