@@ -1,7 +1,6 @@
 /* eslint-disable no-use-before-define */
 import harden from '@agoric/harden';
 import produceIssuer from '@agoric/ertp';
-import { makeZoeHelpers } from '/home/porton/Projects/bounties/agoric-sdk/packages/zoe/src/contractSupport'; // FIXME
 
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
 export const makeContract = harden(zcf => {
@@ -46,8 +45,8 @@ export const makeContract = harden(zcf => {
     return harden({
       invite: zcf.makeInvitation(offerHook),
       publicAPI: {
-        invite2: zcf.makeInvitation(offerHook), // FIXME
-        currency: baytownBucks, // FIXME: security
+        // invite2: zcf.makeInvitation(offerHook),
+        currency: baytownBucks,
         issuer: issuer,
       },
     });
