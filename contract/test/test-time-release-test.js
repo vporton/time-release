@@ -41,6 +41,9 @@ test(`Zoe opera ticket contract`, async t => {
                     }) => {
                       const amount = await E(publicAPI.issuer).getAmountOf((await payout).Ticket);
                       let timeLock = amount.extent[0].timeLock;
+                      console.log(timeLock.getPayment());
+                    //   t.notEqual(timeLock.getPayment(), null);
+
                     //   t.equal(
                     //     amount.extent,
                     //     1000,

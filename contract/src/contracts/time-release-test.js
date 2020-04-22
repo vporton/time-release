@@ -3,7 +3,7 @@ import harden from '@agoric/harden';
 import produceIssuer from '@agoric/ertp';
 import { makeZoeHelpers } from '/home/porton/Projects/bounties/agoric-sdk/packages/zoe/src/contractSupport'; // FIXME
 
-import { makeTestTimeRelease } from './time-release';
+import { makeTimeRelease } from './time-release';
 
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
 export const makeContract = harden(zcf => {
@@ -32,8 +32,7 @@ export const makeContract = harden(zcf => {
       let date = new Date();
       let date2 = new Date(date);
       date2.setFullYear(date2.getFullYear() + 10); // I hope we won't stay 10 years paused
-      const lock = makeTestTimeRelease(lockedPayment, date2);
-    //   lock.setCurrentTime()
+      const lock = makeTimeRelease(lockedPayment, date2);
 
       const ticketsAmount = wrapperToken(harden([harden({timeLock: lock})]));
       const ticketsPayment = mint.mintPayment(ticketsAmount);
