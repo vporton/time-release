@@ -8,7 +8,7 @@ import { E } from '@agoric/eventual-send';
 
 import { makeZoe } from '@agoric/zoe';
 
-const operaConcertTicketRoot = `${__dirname}/../src/contracts/contract.js`;
+const operaConcertTicketRoot = `${__dirname}/../src/contracts/basic-contract.js`;
 
 test(`Zoe opera ticket contract`, async t => {
   // Setup initial conditions
