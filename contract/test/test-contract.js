@@ -12,12 +12,6 @@ const operaConcertTicketRoot = `${__dirname}/../src/contracts/operaConcertTicket
 
 test(`Zoe opera ticket contract`, async t => {
   // Setup initial conditions
-  const {
-    mint: moolaMint,
-    issuer: moolaIssuer,
-    amountMath: { make: moola },
-  } = produceIssuer('moola');
-
   const zoe = makeZoe({ require });
   const inviteIssuer = zoe.getInviteIssuer();
 
@@ -27,7 +21,7 @@ test(`Zoe opera ticket contract`, async t => {
       const installationHandle = zoe.install(source, moduleFormat);
 
       return zoe
-        .makeInstance(installationHandle, harden({ /*Token: moolaIssuer*/ }))
+        .makeInstance(installationHandle)
         .then(auditoriumInvite => {
           console.log(auditoriumInvite)
           return inviteIssuer
