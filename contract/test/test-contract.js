@@ -24,8 +24,6 @@ test(`Zoe opera ticket contract`, async t => {
   // === Initial Opera de Bordeaux part ===
   const contractReadyP = bundleSource(operaConcertTicketRoot).then(
     ({ source, moduleFormat }) => {
-      const expectedAmountPerTicket = moola(22);
-
       const installationHandle = zoe.install(source, moduleFormat);
 
       return zoe
@@ -35,7 +33,6 @@ test(`Zoe opera ticket contract`, async t => {
             .getAmountOf(auditoriumInvite)
             .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
               const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
-              console.log(publicAPI)
 
               // The auditorium makes an offer.
               return (
@@ -50,28 +47,33 @@ test(`Zoe opera ticket contract`, async t => {
                   // cancel will be renamed complete: https://github.com/Agoric/agoric-sdk/issues/835
                   // cancelObj exists because of a current limitation in @agoric/marshal : https://github.com/Agoric/agoric-sdk/issues/818
                   .then(
-                    async ({
-                      outcome: auditoriumOutcomeP,
-                      payout,
-                      cancelObj: { cancel: complete },
-                      offerHandle,
-                    }) => {
-                      const { currentAllocation } = await E(zoe).getOffer(
-                        await offerHandle,
-                      );
+                    // async ({
+                    //   outcome: auditoriumOutcomeP,
+                    //   payout,
+                    //   cancelObj: { cancel: complete },
+                    //   offerHandle,
+                    // }) => {
+                    //   const { currentAllocation } = await E(zoe).getOffer(
+                    //     await offerHandle,
+                    //   );
 
-                      return {
-                        publicAPI,
-                        operaPayout: payout,
-                        complete,
-                      };
-                    },
+                    //   return {
+                    //     publicAPI,
+                    //     operaPayout: payout,
+                    //     complete,
+                    //   };
+                    // },
                   )
               );
             });
         });
     },
-  );
+  )
+  .catch(err => {
+    console.error('Error in last Opera part', err);
+    t.fail('error');
+  })
+  .then(() => t.end());
 
   // return contractReadyP.then(({ publicAPI }) => {
   //   console.log(publicAPI);
