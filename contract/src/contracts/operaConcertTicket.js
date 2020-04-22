@@ -85,14 +85,14 @@ export const makeContract = harden(zcf => {
         };
 
         const buyTicketOfferHook = buyerOfferHandle => {
-          const buyerOffer = zcf.getOffer(buyerOfferHandle);
+          // const buyerOffer = zcf.getOffer(buyerOfferHandle);
 
-          const currentAuditoriumAllocation = zcf.getCurrentAllocation(
-            auditoriumOfferHandle,
-          );
-          const currentBuyerAllocation = zcf.getCurrentAllocation(
-            buyerOfferHandle,
-          );
+          // const currentAuditoriumAllocation = zcf.getCurrentAllocation(
+          //   auditoriumOfferHandle,
+          // );
+          // const currentBuyerAllocation = zcf.getCurrentAllocation(
+          //   buyerOfferHandle,
+          // );
 
           try {
             zcf.reallocate(
@@ -109,14 +109,8 @@ export const makeContract = harden(zcf => {
         return harden({
           invite: zcf.makeInvitation(auditoriumOfferHook),
           publicAPI: {
-            makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
+            // makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
             getTicketIssuer: () => issuer,
-            getAvailableTickets() {
-              // Because of a technical limitation in @agoric/marshal, an array of extents
-              // is better than a Map https://github.com/Agoric/agoric-sdk/issues/838
-              return zcf.getCurrentAllocation(auditoriumOfferHandle).Ticket
-                .extent;
-            },
           },
         });
       });
