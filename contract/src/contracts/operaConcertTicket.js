@@ -84,28 +84,6 @@ export const makeContract = harden(zcf => {
           return `Payment accepted.`;
         };
 
-        const buyTicketOfferHook = buyerOfferHandle => {
-          // const buyerOffer = zcf.getOffer(buyerOfferHandle);
-
-          // const currentAuditoriumAllocation = zcf.getCurrentAllocation(
-          //   auditoriumOfferHandle,
-          // );
-          // const currentBuyerAllocation = zcf.getCurrentAllocation(
-          //   buyerOfferHandle,
-          // );
-
-          try {
-            zcf.reallocate(
-              [auditoriumOfferHandle, buyerOfferHandle],
-              [],
-            );
-            zcf.complete([buyerOfferHandle]);
-          } catch (err) {
-            // amounts don't match or reallocate certainly failed
-            rejectOffer(buyerOfferHandle); // FIXME
-          }
-        };
-
         return harden({
           invite: zcf.makeInvitation(auditoriumOfferHook),
           publicAPI: {
