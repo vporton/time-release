@@ -96,50 +96,15 @@ export const makeContract = harden(zcf => {
             buyerOfferHandle,
           );
 
-          const wantedTicketsCount =
-            buyerOffer.proposal.want.Ticket.extent.length;
-          const wantedMoney =
-            expectedAmountPerTicket.extent * wantedTicketsCount;
-
           try {
-            if (
-              !moneyAmountMath.isGTE(
-                currentBuyerAllocation.Money,
-                moneyAmountMath.make(wantedMoney),
-              )
-            ) {
-              throw new Error(
-                'The offer associated with this seat does not contain enough moolas',
-              );
-            }
-
-            const wantedAuditoriumAllocation = {
-              Money: moneyAmountMath.add(
-                currentAuditoriumAllocation.Money,
-                currentBuyerAllocation.Money,
-              ),
-              Ticket: ticketAmountMath.subtract(
-                currentAuditoriumAllocation.Ticket,
-                buyerOffer.proposal.want.Ticket,
-              ),
-            };
-
-            const wantedBuyerAllocation = {
-              Money: moneyAmountMath.getEmpty(),
-              Ticket: ticketAmountMath.add(
-                currentBuyerAllocation.Ticket,
-                buyerOffer.proposal.want.Ticket,
-              ),
-            };
-
             zcf.reallocate(
               [auditoriumOfferHandle, buyerOfferHandle],
-              [wantedAuditoriumAllocation, wantedBuyerAllocation],
+              [],
             );
             zcf.complete([buyerOfferHandle]);
           } catch (err) {
             // amounts don't match or reallocate certainly failed
-            rejectOffer(buyerOfferHandle);
+            rejectOffer(buyerOfferHandle); // FIXME
           }
         };
 
