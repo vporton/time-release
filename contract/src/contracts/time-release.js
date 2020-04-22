@@ -2,7 +2,8 @@ import { makeZoe } from '@agoric/zoe';
 import { E } from '@agoric/eventual-send';
 
 class _TimeRelease {
-    // TODO: Pass `zcf` to it, remove `E()`
+    // TODO: Pass `zcf` to it, remove `E()`.
+    // FIXME: Needs `E()` for timerService.
     constructor(payment, lockedUntil = Date.now()) {
         let _offer = null;
         let _payment = payment;
