@@ -27,9 +27,9 @@ export const makeContract = harden(zcf => {
 
     // the contract creates an offer {give: tickets, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
-      const lockedPayment = mint1.mintPayment(baytownBucks(100));
+      const lockedPayment = mint1.mintPayment(baytownBucks(1000));
       const lock = makeTestTimeRelease(lockedPayment);
-      const ticketsAmount = baytownBucks(harden([harden({timeLock: lock})]));
+      const ticketsAmount = issuer.getAmountMath().make(harden([harden({timeLock: lock})]));
       const ticketsPayment = mint1.mintPayment(ticketsAmount);
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
