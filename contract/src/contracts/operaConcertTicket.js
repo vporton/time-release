@@ -78,7 +78,7 @@ export const makeContract = harden(zcf => {
               zcf.getCurrentAllocation(auditoriumOfferHandle),
             ],
           );
-          zcf.complete([]);
+          zcf.complete([auditoriumOfferHandle]);
           // the auditoriumOfferHandle is now associated with the
           // tickets and the contract offer is gone from the contract
           return `Payment accepted.`;
