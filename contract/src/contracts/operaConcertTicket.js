@@ -82,7 +82,7 @@ export const makeContract = harden(zcf => {
               zcf.getCurrentAllocation(tempContractHandle),
             ],
           );
-          zcf.complete([tempContractHandle, userOfferHandle]);
+          zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
           return `Payment scheduled.`;
         });
     }
@@ -91,7 +91,7 @@ export const makeContract = harden(zcf => {
       publicAPI: {
         invite2: zcf.makeInvitation(offerHook),
         //makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
-        getTicketIssuer: () => issuer, // FIXME: security
+        currency: baytownBucks, // FIXME: security
       },
     });
   });
