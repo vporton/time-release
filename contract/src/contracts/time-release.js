@@ -1,10 +1,3 @@
-// class _BaseTimeRelease {
-//     currentTime() { }
-// }
-
-// _BaseTimeRelease = harden(_BaseTimeRelease);
-
-
 class _TimeRelease {
     constructor(payment, lockedUntil = Date.now()) {
         let _payment = payment;
@@ -13,11 +6,8 @@ class _TimeRelease {
             return _lockedUntil;
         }
         this.getPayment = function() {
-            return this.currentTime() >= _lockedUntil ? _payment : null;
+            return Date.now() >= _lockedUntil ? _payment : null;
         }
-    }
-    currentTime() {
-        return Date.now();
     }
 }
 
