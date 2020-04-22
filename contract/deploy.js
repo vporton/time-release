@@ -47,7 +47,7 @@ export default async function deployContract(referencesPromise, { bundleSource, 
   // and install it on Zoe. This returns an installationHandle, an
   // opaque, unforgeable identifier for our contract code that we can
   // reuse again and again to create new, live contract instances.
-  const { source, moduleFormat } = await bundleSource(pathResolve(`./src/contract.js`));
+  const { source, moduleFormat } = await bundleSource(pathResolve(`./src/contracts/proxy.js`));
   const installationHandle = await E(zoe).install(source, moduleFormat);
 
   // Let's share this installationHandle with other people, so that
