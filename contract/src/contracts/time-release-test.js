@@ -7,12 +7,12 @@ import { makeTimeRelease } from './time-release';
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
 export const makeContract = harden(zcf => {
   // Create the internal token mint
-  const { issuer: issuer1, mint: mint1, amountMath: amountMath1 } = produceIssuer('BaytownBucks');
+  const { issuer: paymentIssuer, mint: paymentMint, amountMath: paymentAmountMath } = produceIssuer('BaytownBucks');
   const { issuer, mint, amountMath } = produceIssuer(
     'Futures',
     'set',
   );
-  const baytownBucks = amountMath1.make;
+  const baytownBucks = paymentAmountMath.make;
   const wrapperToken = amountMath.make;
 
 //   const {
@@ -27,7 +27,7 @@ export const makeContract = harden(zcf => {
 
     // the contract creates an offer {give: tickets, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
-      const lockedPayment = mint1.mintPayment(baytownBucks(1000));
+      const lockedPayment = paymentMint.mintPayment(baytownBucks(1000));
       let date = new Date();
       let date2 = new Date(date);
       date2.setFullYear(date2.getFullYear() + 10); // I hope we won't stay 10 years paused
