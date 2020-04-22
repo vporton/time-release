@@ -54,20 +54,7 @@ export const makeContract = harden(zcf => {
     // Mint the tickets ahead-of-time (instead of on-demand)
     // This way, they can be passed to Zoe + ERTP who will be doing the bookkeeping
     // of which tickets have been sold and which tickets are still for sale
-    const ticketsAmount = ticketAmountMath.make(
-      harden(
-        Array(count)
-          .fill()
-          .map((_, i) => {
-            const ticketNumber = i + 1;
-            return harden({
-              show,
-              start,
-              number: ticketNumber,
-            });
-          }),
-      ),
-    );
+    const ticketsAmount = ticketAmountMath.make(1000);
     const ticketsPayment = mint.mintPayment(ticketsAmount);
 
     let internalTicketSupplyHandle;
