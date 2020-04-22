@@ -15,7 +15,7 @@ export const makeContract = harden(zcf => {
   const baytownBucks = wrapperAmountMath.make;
   const wrapperToken = amountMath.make;
 
-  return zcf.addNewIssuer(issuer, 'Token').then(() => {
+  return zcf.addNewIssuer(issuer, 'Wrapper').then(() => {
     // the contract creates an offer {give: wrapper, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
       const lockedPayment1 = wrapperMint.mintPayment(baytownBucks(1000));
@@ -39,8 +39,8 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Token: wrapperAmount } }),
-          harden({ Token: ticketsPayment }),
+          harden({ give: { Wrapper: wrapperAmount } }),
+          harden({ Wrapper: ticketsPayment }),
         ).then(() => {
           zcf.reallocate(
             [tempContractHandle, userOfferHandle],
