@@ -10,13 +10,7 @@ export const makeContract = harden(zcf => {
   const baytownBucks = issuer.getAmountMath().make;
 
   return zcf.addNewIssuer(issuer, 'Token').then(() => {
-    // Mint the tickets ahead-of-time (instead of on-demand)
-    // This way, they can be passed to Zoe + ERTP who will be doing the bookkeeping
-    // of which tickets have been sold and which tickets are still for sale
-    const ticketsAmount = baytownBucks(1000);
-    // const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
-
-    // the contract creates an offer {give: tickets, want: nothing} with the tickets
+    // the contract creates an offer {give: tokens, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
       const ticketsAmount = baytownBucks(1000);
       const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);

@@ -16,7 +16,7 @@ export const makeContract = harden(zcf => {
   const wrapperToken = amountMath.make;
 
   return zcf.addNewIssuer(issuer, 'Token').then(() => {
-    // the contract creates an offer {give: tickets, want: nothing} with the tickets
+    // the contract creates an offer {give: wrapper, want: nothing} with the tickets
     const offerHook = userOfferHandle => {
       const lockedPayment = wrapperMint.mintPayment(baytownBucks(1000));
       let date = new Date();
