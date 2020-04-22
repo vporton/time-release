@@ -19,7 +19,7 @@ export const makeContract = harden(zcf => {
 //     terms: { timeLock },
 //   } = zcf.getInstanceRecord();
 
-  return zcf.addNewIssuer(issuer, 'Ticket').then(() => {
+  return zcf.addNewIssuer(issuer, 'Token').then(() => {
     // Mint the tickets ahead-of-time (instead of on-demand)
     // This way, they can be passed to Zoe + ERTP who will be doing the bookkeeping
     // of which tickets have been sold and which tickets are still for sale
@@ -43,8 +43,8 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Ticket: ticketsAmount } }),
-          harden({ Ticket: ticketsPayment }),
+          harden({ give: { Token: ticketsAmount } }),
+          harden({ Token: ticketsPayment }),
         ).then(() => {
           zcf.reallocate(
             [tempContractHandle, userOfferHandle],

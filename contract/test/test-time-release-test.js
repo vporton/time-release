@@ -39,7 +39,7 @@ test(`Time release contract`, async t => {
                       cancelObj: { cancel: complete },
                       offerHandle,
                     }) => {
-                      const amount = await E(publicAPI.issuer).getAmountOf((await payout).Ticket);
+                      const amount = await E(publicAPI.issuer).getAmountOf((await payout).Token);
                       let timeLock = amount.extent[0].timeLock;
                       console.log(timeLock.getPayment());
                     //   t.notEqual(timeLock.getPayment(), null);

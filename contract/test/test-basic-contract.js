@@ -39,7 +39,7 @@ test(`Zoe opera ticket contract`, async t => {
                       cancelObj: { cancel: complete },
                       offerHandle,
                     }) => {
-                      const amount = await E(publicAPI.issuer).getAmountOf((await payout).Ticket);
+                      const amount = await E(publicAPI.issuer).getAmountOf((await payout).Token);
                       t.equal(
                         amount.extent,
                         1000,
