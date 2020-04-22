@@ -54,7 +54,7 @@ export const makeContract = harden(zcf => {
     // Mint the tickets ahead-of-time (instead of on-demand)
     // This way, they can be passed to Zoe + ERTP who will be doing the bookkeeping
     // of which tickets have been sold and which tickets are still for sale
-    const ticketsAmount = issuer.getAmountMath().make(1000);
+    const ticketsAmount = baytownBucks(1000);
     const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
 
     const contractSelfInvite = zcf.makeInvitation(
@@ -109,7 +109,7 @@ export const makeContract = harden(zcf => {
         return harden({
           invite: zcf.makeInvitation(auditoriumOfferHook),
           publicAPI: {
-            // makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
+            makeBuyerInvite: () => zcf.makeInvitation(buyTicketOfferHook),
             getTicketIssuer: () => issuer,
           },
         });
