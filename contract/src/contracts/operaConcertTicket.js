@@ -57,10 +57,8 @@ export const makeContract = harden(zcf => {
     const ticketsAmount = issuer.getAmountMath().make(1000);
     const ticketsPayment = baytownBucksMint.mintPayment(ticketsAmount);
 
-    const internalTicketSupplyOfferHook = offerHandle => { };
-
     const contractSelfInvite = zcf.makeInvitation(
-      internalTicketSupplyOfferHook,
+      offerHandle => {}
     );
     // the contract creates an offer {give: tickets, want: nothing} with the tickets
     return zcf
