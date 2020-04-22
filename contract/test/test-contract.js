@@ -58,22 +58,6 @@ test(`Zoe opera ticket contract`, async t => {
         });
     },
   )
-
-  // return contractReadyP.then(({ publicAPI, operaPayout, complete }) => {
-  //   const ticketAmountMath = publicAPI.currency(1000);
-
-  //   const done = operaPayout.then(payout => {
-  //     return payout.Money.then(moneyPayment => {
-  //       return operaPurse.deposit(moneyPayment);
-  //     }).then(() => {
-  //       console.log(operaPurse.getCurrentAmount().extent)
-  //     });
-  //   });
-
-  //   complete();
-
-  //   return done;
-  // })
   .catch(err => {
     console.error('Error in last Opera part', err);
     t.fail('  error');
