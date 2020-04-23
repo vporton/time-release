@@ -5,22 +5,24 @@ import bundleSource from '@agoric/bundle-source';
 import harden from '@agoric/harden';
 import produceIssuer from '@agoric/ertp';
 import { E } from '@agoric/eventual-send';
-
 import { makeZoe } from '@agoric/zoe';
+import { buildManualTimer } from '@agoric/zoe/tools/manualTimer'
 
-const operaConcertTicketRoot = `${__dirname}/../src/contracts/time-release-test.js`;
+const operaConcertTicketRoot = `${__dirname}/../src/contracts/proxy.js`;
 
 test(`Time release contract`, async t => {
   // Setup initial conditions
   const zoe = makeZoe({ require });
   const inviteIssuer = zoe.getInviteIssuer();
+
+  const timerService = buildManualTimer(console.log);
  
   const contractReadyP = bundleSource(operaConcertTicketRoot).then(
     ({ source, moduleFormat }) => {
       const installationHandle = zoe.install(source, moduleFormat);
 
       return zoe
-        .makeInstance(installationHandle)
+        .makeInstance(installationHandle, {}, { timerService })
         .then(myInvite => {
           return inviteIssuer
             .getAmountOf(myInvite)
