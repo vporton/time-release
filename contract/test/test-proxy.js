@@ -64,29 +64,32 @@ test(`Time release contract`, async t => {
     },
   )
 
-  // contractReadyP.then(({ publicAPI }) => {
-  //   const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite());
-  //   const handle = {}; // secret handler
-  //   const currencyIssuer = produceIssuer('BaytownBucks')
-  //   const { mint: baytownBucksMint, issuer } = currencyIssuer;
-  //   const baytownBucks = issuer.getAmountMath().make;
-  //   const payment = baytownBucksMint.mint(baytownBucks(1000));
-  //   const aliceProposal = { give: {payment, handler: handle, date: 0}}
-  //   zoe
-  //     .offer(sendInvite, aliceProposal, {})
-  //     .then(({ payout: payoutP }) => {
-  //       console.log(payoutP);
-  //     });
-  //   return { publicAPI };
-  // }).then(({ publicAPI }) => {
-  //   const bobProposal = { want: {handle}}
-  //   zoe
-  //     .offer(sendInvite, bobProposal, {})
-  //     .then(({ payout: payoutP }) => {
-  //       console.log(payoutP);
-  //     });
-  //   return { publicAPI };
-  // })
+  contractReadyP.then(({ publicAPI }) => {
+    const payment = baytownBucksMint.mint(baytownBucks(1000));
+    const handle = {}; // secret handler
+    const date = 0;
+    const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(payment, handle, date)());
+    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(payment, handle, date)());
+
+    const currencyIssuer = produceIssuer('BaytownBucks')
+    const { mint: baytownBucksMint, issuer } = currencyIssuer;
+    const baytownBucks = issuer.getAmountMath().make;
+    const aliceProposal = {};
+    zoe
+      .offer(sendInvite, aliceProposal, {})
+      .then(({ payout: payoutP }) => {
+        console.log(payoutP);
+      });
+    return { publicAPI };
+  }).then(({ publicAPI }) => {
+    const bobProposal = {}
+    zoe
+      .offer(sendInvite, bobProposal, {})
+      .then(({ payout: payoutP }) => {
+        console.log(payoutP);
+      });
+    return { publicAPI };
+  })
   .catch(err => {
     console.error('Error in last Opera part', err);
     t.fail('  error');
