@@ -88,9 +88,9 @@ export const makeContract = harden(zcf => {
           harden({ Wrapper: payment }),
         ).then(() => {
           console.log(
-          zcf.getCurrentAllocation(userOfferHandle),
-          zcf.getCurrentAllocation(tempContractHandle),
-        )
+            zcf.getCurrentAllocation(userOfferHandle),
+            zcf.getCurrentAllocation(tempContractHandle),
+          );
           zcf.reallocate(
             [tempContractHandle, userOfferHandle],
             [
