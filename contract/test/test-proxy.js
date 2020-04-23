@@ -101,7 +101,7 @@ test(`Time release contract`, async t => {
               const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
               const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0]);
               const timeRelease = payment.extent[0];
-              const realPayment = timeRelease.getPayment()
+              const realPayment = await timeRelease.getPayment()
               console.log(realPayment)
               console.log(await E(publicAPI.issuer).getAmountOf(realPayment))
     
