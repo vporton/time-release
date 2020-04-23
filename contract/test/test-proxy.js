@@ -63,7 +63,8 @@ test(`Time release contract`, async t => {
     const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
 
     function pushPullMoney(date) {
-      const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(harden(payment), harden(handle), harden(date))());
+      const sendInvite = inviteIssuer.claim(
+        publicAPI.makeSendInvite(harden(issuer), harden(payment), harden(handle), harden(date))());
       const aliceProposal = {};
       zoe
         .offer(sendInvite, harden(aliceProposal), {})
@@ -74,8 +75,6 @@ test(`Time release contract`, async t => {
             cancelObj: { cancel: complete },
             offerHandle,
           }) => {
-            const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
-
             return {
               publicAPI,
               operaPayout: payout,
@@ -84,7 +83,7 @@ test(`Time release contract`, async t => {
           },
         )
         .then(() => {
-          const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
+          const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(harden(issuer), harden(handle))());
           const bobProposal = {}
           zoe
             .offer(receiveInvite, harden(bobProposal), {})
@@ -97,10 +96,7 @@ test(`Time release contract`, async t => {
               }) => {
                 const wrapperPayment = await (await payout).Wrapper;
                 const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
-                console.log(amount)
-                const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0]);
-                const timeRelease = payment.extent[0];
-                const realPayment = await timeRelease.getPayment()
+                console.log("wrapperPayment", amount)
                 t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
       
                 return {
@@ -111,10 +107,10 @@ test(`Time release contract`, async t => {
               }
             )
         });
-      return { publicAPI };
+        return { publicAPI };
     }
 
-    pushPullMoney(0);
+    // pushPullMoney(0);
     return pushPullMoney(0);
   })
   .catch(err => {

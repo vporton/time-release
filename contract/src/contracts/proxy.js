@@ -28,25 +28,25 @@ export const makeContract = harden(zcf => {
     }
 
     // the contract creates an offer {give: wrapper, want: nothing} with the time release wrapper
-    const sendHook = (lockedPayment, handle, date) => userOfferHandle => {
-      const lock = makeTimeRelease(zcf, timerService, lockedPayment, date);
+    const sendHook = (paymentIssuer, lockedPayment, handle, date) => userOfferHandle => {
+      const myPurse = paymentIssuer.makeEmptyPurse();
+      const lockedAmount = myPurse.deposit(lockedPayment);
 
-      const wrapperAmount = wrapperToken(harden([harden(lock)]));
-      const wrapperPayment = mint.mintPayment(wrapperAmount);
+      const lock = makeTimeRelease(zcf, timerService, myPurse, date);
+
+      payments.set(handle, lock);
 
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
         offerHandle => (tempContractHandle = offerHandle),
       );
 
-      payments.set(handle, wrapperPayment);
-
       zcf
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ /*give: { Wrapper: wrapperAmount }*/ }),
-          harden({ Wrapper: wrapperPayment }),
+          harden({ /*want: { Wrapper: lockedAmount }*/ }),
+          harden({ Wrapper: lockedPayment }),
         ).then(() => {
           // Don't forget to call this, otherwise the other side won't be able to get the money:
           lock.setOffer(tempContractHandle);
@@ -63,13 +63,16 @@ export const makeContract = harden(zcf => {
         });
     }
 
-    const receiveHook = handle => userOfferHandle => {
-      const payment = payments.get(handle);
-      if(!payment) {
+    const receiveHook = (paymentIssuer, handle) => async userOfferHandle => {
+      const timeLock = payments.get(handle);
+      if(!timeLock) {
         return `Trying to get non-exisiting payment.`;
       }
-      const wrapperAmount = wrapperToken(harden([payment]));
-      const wrapperPayment = mint.mintPayment(wrapperAmount);
+      const purse = await timeLock.getPayment();
+      if(!purse) {
+        return `Trying to get a future-date payment.`;
+      }
+      const payment = purse.withdraw()
 
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
@@ -80,8 +83,8 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Wrapper: wrapperAmount } }),
-          harden({ Wrapper: wrapperPayment }),
+          harden({ give: { Wrapper: purse.getCurrentAmount() } }),
+          harden({ Wrapper: payment }),
         ).then(() => {
           zcf.reallocate(
             [tempContractHandle, userOfferHandle],
@@ -92,24 +95,26 @@ export const makeContract = harden(zcf => {
           );
           zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
           payments.delete(handle); // We already delivered it.
+          purse.withdraw(purse.getCurrentAmount());
+
           return `Scheduled payment delivered.`;
         });
     }
     
     const { inviteAnOffer } = makeZoeHelpers(zcf);   
     
-    const makeSendInvite = (payment, handler, date) => () =>
+    const makeSendInvite = (paymentIssuer, payment, handler, date) => () =>
       inviteAnOffer(
         harden({
-          offerHook: sendHook(payment, handler, date),
+          offerHook: sendHook(paymentIssuer, payment, handler, date),
           customProperties: { inviteDesc: 'offer' },
         }),
       );
 
-    const makeReceiveInvite = handle => () =>
+    const makeReceiveInvite = (paymentIssuer, handle) => () =>
       inviteAnOffer(
         harden({
-          offerHook: receiveHook(handle),
+          offerHook: receiveHook(paymentIssuer, handle),
           customProperties: { inviteDesc: 'get money' },
         }),
       );
@@ -119,7 +124,6 @@ export const makeContract = harden(zcf => {
       publicAPI: {
         makeSendInvite,
         makeReceiveInvite,
-        //currency: wrapperToken,
         issuer: issuer,
       },
     });
