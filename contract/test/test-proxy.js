@@ -61,56 +61,61 @@ test(`Time release contract`, async t => {
     const baytownBucks = issuer.getAmountMath().make;
 
     const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
-    const date = 0;
 
-    const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(harden(payment), harden(handle), harden(date))());
-    const aliceProposal = {};
-    zoe
-      .offer(sendInvite, harden(aliceProposal), {})
-      .then(
-        async ({
-          outcome: outcomeP,
-          payout,
-          cancelObj: { cancel: complete },
-          offerHandle,
-        }) => {
-          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
+    function pushPullMoney(date) {
+      const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(harden(payment), harden(handle), harden(date))());
+      const aliceProposal = {};
+      zoe
+        .offer(sendInvite, harden(aliceProposal), {})
+        .then(
+          async ({
+            outcome: outcomeP,
+            payout,
+            cancelObj: { cancel: complete },
+            offerHandle,
+          }) => {
+            const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
 
-          return {
-            publicAPI,
-            operaPayout: payout,
-            complete,
-          };
-        },
-      )
-      .then(() => {
-        const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
-        const bobProposal = {}
-        zoe
-          .offer(receiveInvite, harden(bobProposal), {})
-          .then(
-            async ({
-              outcome: outcomeP,
-              payout,
-              cancelObj: { cancel: complete },
-              offerHandle,
-            }) => {
-              const wrapperPayment = await (await payout).Wrapper;
-              const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
-              const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0]);
-              const timeRelease = payment.extent[0];
-              const realPayment = await timeRelease.getPayment()
-              t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
-    
-              return {
-                publicAPI,
-                operaPayout: payout,
-                complete,
-              };
-            }
-          )
-      });
-    return { publicAPI };
+            return {
+              publicAPI,
+              operaPayout: payout,
+              complete,
+            };
+          },
+        )
+        .then(() => {
+          const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
+          const bobProposal = {}
+          zoe
+            .offer(receiveInvite, harden(bobProposal), {})
+            .then(
+              async ({
+                outcome: outcomeP,
+                payout,
+                cancelObj: { cancel: complete },
+                offerHandle,
+              }) => {
+                const wrapperPayment = await (await payout).Wrapper;
+                const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
+                console.log(amount)
+                const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0]);
+                const timeRelease = payment.extent[0];
+                const realPayment = await timeRelease.getPayment()
+                t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
+      
+                return {
+                  publicAPI,
+                  operaPayout: payout,
+                  complete,
+                };
+              }
+            )
+        });
+      return { publicAPI };
+    }
+
+    pushPullMoney(0);
+    return pushPullMoney(0);
   })
   .catch(err => {
     console.error('Error in last Time Release part', err);
