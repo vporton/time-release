@@ -64,7 +64,8 @@ export const makeContract = harden(zcf => {
     }
 
     const receiveHook = handle => userOfferHandle => {
-      const wrapperPayment = wrapperToken(harden([payments.get(handle)]));
+      const wrapperAmount = wrapperToken(harden([payments.get(handle)]));
+      const wrapperPayment = mint.mintPayment(wrapperAmount);
 
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
@@ -75,7 +76,7 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ want: { Wrapper: wrapperPayment } }),
+          harden({ give: { Wrapper: wrapperAmount } }),
           harden({ Wrapper: wrapperPayment }),
         ).then(() => {
           zcf.reallocate(
