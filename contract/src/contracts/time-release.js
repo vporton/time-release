@@ -24,5 +24,5 @@ class _TimeRelease {
 _TimeRelease = harden(_TimeRelease);
 
 export function makeTimeRelease(zcf, timerService, payment, lockedUntil = Date.now()) {
-    return harden(new _TimeRelease(zcf, payment, lockedUntil));
+    return harden(new _TimeRelease(zcf, timerService, payment, lockedUntil));
 }

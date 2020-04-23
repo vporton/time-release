@@ -75,7 +75,7 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Wrapper: wrapperPayment } }),
+          harden({ want: { Wrapper: wrapperPayment } }),
           harden({ Wrapper: wrapperPayment }),
         ).then(() => {
           zcf.reallocate(
