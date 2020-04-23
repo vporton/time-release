@@ -54,29 +54,29 @@ test(`Time release contract`, async t => {
     },
   )
 
+  const handle = {}; // secret handler
+
   contractReadyP.then(({ publicAPI }) => {
     const currencyIssuer = produceIssuer('BaytownBucks')
     const { mint: baytownBucksMint, issuer } = currencyIssuer;
-    console.log('baytownBucksMint', baytownBucksMint)
-    const baytownBucks = issuer.getAmountMath().make;
+     const baytownBucks = issuer.getAmountMath().make;
 
     const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
-    const handle = {}; // secret handler
     const date = 0;
 
-    const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(payment, handle, date)());
+    const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(harden(payment), harden(handle), harden(date))());
     const aliceProposal = {};
     zoe
-      .offer(sendInvite, aliceProposal, {})
+      .offer(sendInvite, harden(aliceProposal), {})
       .then(({ payout: payoutP }) => {
         console.log(payoutP);
       });
     return { publicAPI };
   }).then(({ publicAPI }) => {
-    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
+    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(harden(handle))());
     const bobProposal = {}
     zoe
-      .offer(receiveInvite, bobProposal, {})
+      .offer(receiveInvite, harden(bobProposal), {})
       .then(({ payout: payoutP }) => {
         console.log(payoutP);
       });
