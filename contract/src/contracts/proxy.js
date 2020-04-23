@@ -10,46 +10,44 @@ import { makeTimeRelease } from './time-release';
  */
 export const makeContract = harden(zcf => {
   // Create the internal token mint
-  const { issuer: wrapperIssuer, mint: wrapperMint, amountMath: wrapperAmountMath } = produceIssuer('BaytownBucks');
   const { issuer, mint, amountMath } = produceIssuer(
     'Futures',
     'set',
   );
-  const baytownBucks = wrapperAmountMath.make;
   const wrapperToken = amountMath.make;
 
+  let payments = new Map(); // from handle ({}) to payment
+
   return zcf.addNewIssuer(issuer, 'Wrapper').then(() => {
-    // the contract creates an offer {give: wrapper, want: nothing} with the tickets
-    const offerHook = userOfferHandle => {
-      // Do a payment right now:
-      const lockedPayment1 = wrapperMint.mintPayment(baytownBucks(1000));
-      let date = new Date();
-      const lock1 = makeTimeRelease(zcf, lockedPayment1, date);
+    const adminHook = userOfferHandle => {
+    }
 
-      // Allow a payment after 10 years:
-      const lockedPayment2 = wrapperMint.mintPayment(baytownBucks(2000));
-      let date2 = new Date(date);
-      date2.setFullYear(date2.getFullYear() + 10); // I hope we won't stay 10 years paused
-      const lock2 = makeTimeRelease(zcf, lockedPayment2, date2);
+    // the contract creates an offer {give: wrapper, want: nothing} with the time release wrapper
+    const sendHook = userOfferHandle => {
+      const offer = zcf.getOffer(userOfferHandle);
+      const lockedPayment = offer.give.payment;
+      const handle = offer.give.handle; // can get money only using this handle
+      const lock = makeTimeRelease(zcf, lockedPayment, offer.give.date);
 
-      const wrapperAmount = wrapperToken(harden([harden({timeLock1: lock1, timeLock2: lock2})]));
-      const ticketsPayment = mint.mintPayment(wrapperAmount);
+      const wrapperAmount = wrapperToken(harden([harden(lock)]));
+      const wrapperPayment = mint.mintPayment(wrapperAmount);
 
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
         offerHandle => (tempContractHandle = offerHandle),
       );
 
+      payments.set(handle, wrapperPayment);
+
       zcf
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Wrapper: wrapperAmount } }),
-          harden({ Wrapper: ticketsPayment }),
+          harden({ give: { Wrapper: wrapperAmount, handle: handle } }),
+          harden({ Wrapper: wrapperPayment }),
         ).then(() => {
           // Don't forget to call this, otherwise the other side won't be able to get the money:
-          lock1.setOffer(tempContractHandle);
-          lock2.setOffer(tempContractHandle);
+          lock.setOffer(tempContractHandle);
 
           zcf.reallocate(
             [tempContractHandle, userOfferHandle],
@@ -62,9 +60,45 @@ export const makeContract = harden(zcf => {
           return `Payment scheduled.`;
         });
     }
+
+    const receiveHook = userOfferHandle => {
+      const offer = zcf.getOffer(userOfferHandle);
+      const handle = offer.want.handle;
+      const wrapperPayment = payments.get(handle);
+
+      zcf
+        .getZoeService()
+        .offer(
+          contractSelfInvite,
+          harden({ give: { Wrapper: wrapperPayment } }),
+          harden({ Wrapper: wrapperPayment }),
+        ).then(() => {
+          zcf.reallocate(
+            [tempContractHandle, userOfferHandle],
+            [
+              zcf.getCurrentAllocation(userOfferHandle),
+              zcf.getCurrentAllocation(tempContractHandle),
+            ],
+          );
+          zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
+          payments.delete(handle); // We already delivered it.
+          return `Scheduled payment delivered.`;
+        });
+    }
+    
+    const makeInvite = () =>
+      inviteAnOffer(
+        harden({
+          sendHook: sendHook,
+          receiveHook: receiveHook,
+          customProperties: { inviteDesc: 'offer' },
+        }),
+      );
+
     return harden({
-      invite: zcf.makeInvitation(offerHook),
+      invite: zcf.makeInvitation(adminHook),
       publicAPI: {
+        makeInvite,
         currency: wrapperToken,
         issuer: issuer,
       },
