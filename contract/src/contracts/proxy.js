@@ -29,7 +29,6 @@ export const makeContract = harden(zcf => {
 
     // the contract creates an offer {give: wrapper, want: nothing} with the time release wrapper
     const sendHook = (lockedPayment, handle, date) => userOfferHandle => {
-      console.log("QQQQQQQQQQQQQQQ")
       const lock = makeTimeRelease(zcf, timerService, lockedPayment);
 
       const wrapperAmount = wrapperToken(harden([harden(lock)]));
@@ -92,7 +91,7 @@ export const makeContract = harden(zcf => {
     const makeSendInvite = (payment, handler, date) => () =>
       inviteAnOffer(
         harden({
-          sendHook: sendHook(payment, handler, date),
+          offerHook: sendHook(payment, handler, date),
           customProperties: { inviteDesc: 'offer' },
         }),
       );
@@ -100,7 +99,7 @@ export const makeContract = harden(zcf => {
     const makeReceiveInvite = handle => () =>
       inviteAnOffer(
         harden({
-          receiveHook: receiveHook(handle),
+          offerHook: receiveHook(handle),
           customProperties: { inviteDesc: 'get money' },
         }),
       );
