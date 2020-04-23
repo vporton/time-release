@@ -66,6 +66,11 @@ export const makeContract = harden(zcf => {
     const receiveHook = handle => userOfferHandle => {
       const wrapperPayment = payments.get(handle);
 
+      let tempContractHandle;
+      const contractSelfInvite = zcf.makeInvitation(
+        offerHandle => (tempContractHandle = offerHandle),
+      );
+
       zcf
         .getZoeService()
         .offer(
