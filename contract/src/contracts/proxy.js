@@ -1,8 +1,10 @@
 /* eslint-disable no-use-before-define */
 import harden from '@agoric/harden';
 import produceIssuer from '@agoric/ertp';
+import { makeZoeHelpers } from '@agoric/zoe/src/contractSupport';
 
 import { makeTimeRelease } from './time-release';
+
 
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
 /**
@@ -85,6 +87,8 @@ export const makeContract = harden(zcf => {
         });
     }
     
+    const { inviteAnOffer } = makeZoeHelpers(zcf);   
+    
     const makeSendInvite = (payment, handler, date) => () =>
       inviteAnOffer(
         harden({
@@ -93,10 +97,10 @@ export const makeContract = harden(zcf => {
         }),
       );
 
-    const makeReceiveInvite = () =>
+    const makeReceiveInvite = handle => () =>
       inviteAnOffer(
         harden({
-          receiveHook: receiveHook,
+          receiveHook: receiveHook(handle),
           customProperties: { inviteDesc: 'get money' },
         }),
       );

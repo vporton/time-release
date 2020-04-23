@@ -41,16 +41,6 @@ test(`Time release contract`, async t => {
                       cancelObj: { cancel: complete },
                       offerHandle,
                     }) => {
-                      const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
-                      let timeLock1 = amount.extent[0].timeLock1;
-                      let timeLock2 = amount.extent[0].timeLock2;
-                      let payment1 = timeLock1.getPayment();
-                      let payment2 = timeLock2.getPayment();
-
-                      t.notEqual(payment1, null, `Payment 1 is not null`);
-                      t.notEqual(payment1.getAllegedBrand, null, `It is really a payment.`)
-                      t.equal(payment2, null, `Payment 1 is null`); // will be false after 10 years
-
                       return {
                         publicAPI,
                         operaPayout: payout,
@@ -65,15 +55,16 @@ test(`Time release contract`, async t => {
   )
 
   contractReadyP.then(({ publicAPI }) => {
-    const payment = baytownBucksMint.mint(baytownBucks(1000));
-    const handle = {}; // secret handler
-    const date = 0;
-    const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(payment, handle, date)());
-    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(payment, handle, date)());
-
     const currencyIssuer = produceIssuer('BaytownBucks')
     const { mint: baytownBucksMint, issuer } = currencyIssuer;
+    console.log('baytownBucksMint', baytownBucksMint)
     const baytownBucks = issuer.getAmountMath().make;
+
+    const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
+    const handle = {}; // secret handler
+    const date = 0;
+
+    const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(payment, handle, date)());
     const aliceProposal = {};
     zoe
       .offer(sendInvite, aliceProposal, {})
@@ -82,6 +73,7 @@ test(`Time release contract`, async t => {
       });
     return { publicAPI };
   }).then(({ publicAPI }) => {
+    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
     const bobProposal = {}
     zoe
       .offer(receiveInvite, bobProposal, {})
@@ -91,7 +83,7 @@ test(`Time release contract`, async t => {
     return { publicAPI };
   })
   .catch(err => {
-    console.error('Error in last Opera part', err);
+    console.error('Error in last Time Release part', err);
     t.fail('  error');
   })
   .then(() => t.end());
