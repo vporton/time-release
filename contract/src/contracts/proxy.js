@@ -16,7 +16,7 @@ export const makeContract = harden(zcf => {
 
   // Create the internal token mint
   const { issuer, mint, amountMath } = produceIssuer(
-    'Futures',
+    'Wrapper',
     'set',
   );
   const wrapperToken = amountMath.make;

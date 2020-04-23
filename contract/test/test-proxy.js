@@ -75,7 +75,7 @@ test(`Time release contract`, async t => {
           cancelObj: { cancel: complete },
           offerHandle,
         }) => {
-          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Token);
+          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
           console.log(amount);
 
           return {
