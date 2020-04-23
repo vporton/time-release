@@ -84,7 +84,7 @@ test(`Time release contract`, async t => {
   }).then(({ publicAPI }) => {
     const bobProposal = {}
     zoe
-      .offer(sendInvite, bobProposal, {})
+      .offer(receiveInvite, bobProposal, {})
       .then(({ payout: payoutP }) => {
         console.log(payoutP);
       });
