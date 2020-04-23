@@ -75,8 +75,8 @@ test(`Time release contract`, async t => {
           cancelObj: { cancel: complete },
           offerHandle,
         }) => {
-          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
-          console.log(amount);
+          // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
+          // console.log(amount);
 
           return {
             publicAPI,
@@ -86,8 +86,9 @@ test(`Time release contract`, async t => {
         },
       )
     return { publicAPI };
-  }).then(({ publicAPI }) => {
-    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(harden(handle))());
+  })
+  .then(({ publicAPI }) => {
+    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
     const bobProposal = {}
     zoe
       .offer(receiveInvite, harden(bobProposal), {})
@@ -98,7 +99,8 @@ test(`Time release contract`, async t => {
           cancelObj: { cancel: complete },
           offerHandle,
         }) => {
-          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Token);
+          console.log("QQQ", payout)
+          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
           console.log(amount);
 
           return {

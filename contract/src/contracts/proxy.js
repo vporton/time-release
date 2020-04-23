@@ -64,7 +64,7 @@ export const makeContract = harden(zcf => {
     }
 
     const receiveHook = handle => userOfferHandle => {
-      const wrapperPayment = payments.get(handle);
+      const wrapperPayment = wrapperToken(harden([payments.get(handle)]));
 
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
