@@ -75,7 +75,7 @@ test(`Time release contract`, async t => {
           cancelObj: { cancel: complete },
           offerHandle,
         }) => {
-          // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
+          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
           // console.log(amount);
 
           return {
@@ -85,29 +85,28 @@ test(`Time release contract`, async t => {
           };
         },
       )
-    return { publicAPI };
-  })
-  .then(({ publicAPI }) => {
-    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
-    const bobProposal = {}
-    zoe
-      .offer(receiveInvite, harden(bobProposal), {})
-      .then(({ payout: payoutP }) => {
-        async ({
-          outcome: outcomeP,
-          payout,
-          cancelObj: { cancel: complete },
-          offerHandle,
-        }) => {
-          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
-          console.log(amount);
-
-          return {
-            publicAPI,
-            operaPayout: payout,
-            complete,
-          };
-        }
+      .then(() => {
+        const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
+        const bobProposal = {}
+        zoe
+          .offer(receiveInvite, harden(bobProposal), {})
+          .then(
+            async ({
+              outcome: outcomeP,
+              payout,
+              cancelObj: { cancel: complete },
+              offerHandle,
+            }) => {
+              const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
+              console.log(amount);
+    
+              return {
+                publicAPI,
+                operaPayout: payout,
+                complete,
+              };
+            }
+          )
       });
     return { publicAPI };
   })

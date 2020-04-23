@@ -45,7 +45,7 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Wrapper: wrapperAmount } }),
+          harden({ /*give: { Wrapper: wrapperAmount }*/ }),
           harden({ Wrapper: wrapperPayment }),
         ).then(() => {
           // Don't forget to call this, otherwise the other side won't be able to get the money:
@@ -64,7 +64,11 @@ export const makeContract = harden(zcf => {
     }
 
     const receiveHook = handle => userOfferHandle => {
-      const wrapperAmount = wrapperToken(harden([payments.get(handle)]));
+      const payment = payments.get(handle);
+      if(!payment) {
+        return `Trying to get non-exisiting payment.`;
+      }
+      const wrapperAmount = wrapperToken(harden([payment]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
 
       let tempContractHandle;
