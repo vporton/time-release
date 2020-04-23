@@ -23,6 +23,8 @@ export const makeContract = harden(zcf => {
 
   let payments = new Map(); // from handle ({}) to payment
 
+  let nonce = 0;
+
   return zcf.addNewIssuer(issuer, 'Wrapper').then(() => {
     const adminHook = userOfferHandle => {
     }
@@ -31,7 +33,7 @@ export const makeContract = harden(zcf => {
     const sendHook = (lockedPayment, handle, date) => userOfferHandle => {
       const lock = makeTimeRelease(zcf, timerService, lockedPayment, date);
 
-      const wrapperAmount = wrapperToken(harden([harden(lock)]));
+      const wrapperAmount = wrapperToken(harden([[harden(lock), ++nonce]]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
 
       let tempContractHandle;
@@ -68,7 +70,7 @@ export const makeContract = harden(zcf => {
       if(!payment) {
         return `Trying to get non-exisiting payment.`;
       }
-      const wrapperAmount = wrapperToken(harden([payment]));
+      const wrapperAmount = wrapperToken(harden([[payment, ++nonce]]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
 
       let tempContractHandle;
