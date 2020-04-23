@@ -80,11 +80,12 @@ export const makeContract = harden(zcf => {
         offerHandle => (tempContractHandle = offerHandle),
       );
 
+      console.log(amount.brand.getAllegedName(), payment.getAllegedBrand().getAllegedName())
       zcf
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ /*give: { Wrapper: amount }*/ }), // FIXME
+          harden({ give: { Wrapper: amount } }), // FIXME
           harden({ Wrapper: payment }),
         ).then(() => {
           console.log(
