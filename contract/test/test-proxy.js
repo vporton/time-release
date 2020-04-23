@@ -59,7 +59,7 @@ test(`Time release contract`, async t => {
   contractReadyP.then(({ publicAPI }) => {
     const currencyIssuer = produceIssuer('BaytownBucks')
     const { mint: baytownBucksMint, issuer } = currencyIssuer;
-     const baytownBucks = issuer.getAmountMath().make;
+    const baytownBucks = issuer.getAmountMath().make;
 
     const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
     const date = 0;
@@ -68,9 +68,23 @@ test(`Time release contract`, async t => {
     const aliceProposal = {};
     zoe
       .offer(sendInvite, harden(aliceProposal), {})
-      .then(({ payout: payoutP }) => {
-        console.log(payoutP);
-      });
+      .then(
+        async ({
+          outcome: outcomeP,
+          payout,
+          cancelObj: { cancel: complete },
+          offerHandle,
+        }) => {
+          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Token);
+          console.log(amount);
+
+          return {
+            publicAPI,
+            operaPayout: payout,
+            complete,
+          };
+        },
+      )
     return { publicAPI };
   }).then(({ publicAPI }) => {
     const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(harden(handle))());
@@ -78,7 +92,21 @@ test(`Time release contract`, async t => {
     zoe
       .offer(receiveInvite, harden(bobProposal), {})
       .then(({ payout: payoutP }) => {
-        console.log(payoutP);
+        async ({
+          outcome: outcomeP,
+          payout,
+          cancelObj: { cancel: complete },
+          offerHandle,
+        }) => {
+          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Token);
+          console.log(amount);
+
+          return {
+            publicAPI,
+            operaPayout: payout,
+            complete,
+          };
+        }
       });
     return { publicAPI };
   })

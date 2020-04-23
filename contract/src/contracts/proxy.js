@@ -4,6 +4,7 @@ import produceIssuer from '@agoric/ertp';
 import { makeZoeHelpers } from '@agoric/zoe/src/contractSupport';
 
 import { makeTimeRelease } from './time-release';
+import { cleanProposal } from '@agoric/zoe/src/cleanProposal';
 
 
 // zcf is the Zoe Contract Facet, i.e. the contract-facing API of Zoe
@@ -28,8 +29,8 @@ export const makeContract = harden(zcf => {
 
     // the contract creates an offer {give: wrapper, want: nothing} with the time release wrapper
     const sendHook = (lockedPayment, handle, date) => userOfferHandle => {
-      const offer = zcf.getOffer(userOfferHandle);
-      const lock = makeTimeRelease(zcf, timerService, lockedPayment, );
+      console.log("QQQQQQQQQQQQQQQ")
+      const lock = makeTimeRelease(zcf, timerService, lockedPayment);
 
       const wrapperAmount = wrapperToken(harden([harden(lock)]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
@@ -64,7 +65,6 @@ export const makeContract = harden(zcf => {
     }
 
     const receiveHook = handle => userOfferHandle => {
-      const offer = zcf.getOffer(userOfferHandle);
       const wrapperPayment = payments.get(handle);
 
       zcf
