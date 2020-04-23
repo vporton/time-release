@@ -1,7 +1,7 @@
 import { E } from '@agoric/eventual-send';
 
 class _TimeRelease {
-    constructor(zcf, timerService, handle, payment, lockedUntil = Date.now()) {
+    constructor(zcf, timerService, payment, lockedUntil = Date.now()) {
         let _offer = null;
         let _payment = payment;
         let _lockedUntil = lockedUntil;

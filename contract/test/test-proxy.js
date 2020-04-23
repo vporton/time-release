@@ -92,24 +92,23 @@ test(`Time release contract`, async t => {
     const bobProposal = {}
     zoe
       .offer(receiveInvite, harden(bobProposal), {})
-      .then(({ payout: payoutP }) => {
-        async ({
-          outcome: outcomeP,
-          payout,
-          cancelObj: { cancel: complete },
-          offerHandle,
-        }) => {
-          console.log("QQQ", payout)
-          const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
-          console.log(amount);
+      // .then(({ payout: payoutP }) => {
+      //   async ({
+      //     outcome: outcomeP,
+      //     payout,
+      //     cancelObj: { cancel: complete },
+      //     offerHandle,
+      //   }) => {
+      //     const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
+      //     console.log(amount);
 
-          return {
-            publicAPI,
-            operaPayout: payout,
-            complete,
-          };
-        }
-      });
+      //     return {
+      //       publicAPI,
+      //       operaPayout: payout,
+      //       complete,
+      //     };
+      //   }
+      // });
     return { publicAPI };
   })
   .catch(err => {
