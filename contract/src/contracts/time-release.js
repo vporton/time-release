@@ -3,8 +3,8 @@ import { E } from '@agoric/eventual-send';
 class _TimeRelease {
     constructor(zcf, timerService, payment, lockedUntil) {
         let _offer = null;
-        let _payment = payment;
-        let _lockedUntil = lockedUntil;
+        const _payment = payment;
+        const _lockedUntil = lockedUntil;
         this.lockedUntil = function() {
             return _lockedUntil;
         }

@@ -46,7 +46,7 @@ export const makeContract = harden(zcf => {
         .offer(
           contractSelfInvite,
           harden({ /*want: { Wrapper: lockedAmount }*/ }),
-          harden({ Wrapper: lockedPayment }),
+          harden({ Wrapper: [handle] }),
         ).then(() => {
           // Don't forget to call this, otherwise the other side won't be able to get the money:
           lock.setOffer(tempContractHandle);
@@ -72,7 +72,8 @@ export const makeContract = harden(zcf => {
       if(!purse) {
         return `Trying to get a future-date payment.`;
       }
-      const payment = purse.withdraw()
+      const amount = purse.getCurrentAmount();
+      const payment = purse.withdraw(amount);
 
       let tempContractHandle;
       const contractSelfInvite = zcf.makeInvitation(
@@ -83,9 +84,13 @@ export const makeContract = harden(zcf => {
         .getZoeService()
         .offer(
           contractSelfInvite,
-          harden({ give: { Wrapper: purse.getCurrentAmount() } }),
+          harden({ /*give: { Wrapper: amount }*/ }), // FIXME
           harden({ Wrapper: payment }),
         ).then(() => {
+          console.log(
+          zcf.getCurrentAllocation(userOfferHandle),
+          zcf.getCurrentAllocation(tempContractHandle),
+        )
           zcf.reallocate(
             [tempContractHandle, userOfferHandle],
             [
@@ -95,7 +100,6 @@ export const makeContract = harden(zcf => {
           );
           zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
           payments.delete(handle); // We already delivered it.
-          purse.withdraw(purse.getCurrentAmount());
 
           return `Scheduled payment delivered.`;
         });

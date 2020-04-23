@@ -94,10 +94,11 @@ test(`Time release contract`, async t => {
                 cancelObj: { cancel: complete },
                 offerHandle,
               }) => {
+                const amount = await payout
                 const wrapperPayment = await (await payout).Wrapper;
-                const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
-                console.log("wrapperPayment", amount)
-                t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
+                const amount2 = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
+                console.log(amount2)
+                t.equal((await payout).extent, 1000, `correct payment amount`)
       
                 return {
                   publicAPI,
