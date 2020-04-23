@@ -2,7 +2,7 @@ import { E } from '@agoric/eventual-send';
 
 class _TimeRelease {
     // FIXME: Needs `E()` for timerService.
-    constructor(zcf, handle, payment, lockedUntil = Date.now()) {
+    constructor(zcf, timerService, handle, payment, lockedUntil = Date.now()) {
         let _offer = null;
         let _payment = payment;
         let _lockedUntil = lockedUntil;
@@ -12,7 +12,7 @@ class _TimeRelease {
         this.getPayment = function() {
             if(!_offer) return;
             const zoe = zcf.getZoeService();
-            return zoe.isOfferActive(_offer) && Date.now() >= _lockedUntil ? _payment : null;
+            return zoe.isOfferActive(_offer) && timerService.getCurrentTimestamp() >= _lockedUntil ? _payment : null;
         }
         // SECURITY: Don't forget to call this function,
         // otherwise getPayment() will always return null.
@@ -24,6 +24,6 @@ class _TimeRelease {
 
 _TimeRelease = harden(_TimeRelease);
 
-export function makeTimeRelease(zcf, payment, lockedUntil = Date.now()) {
+export function makeTimeRelease(zcf, timerService, payment, lockedUntil = Date.now()) {
     return harden(new _TimeRelease(zcf, payment, lockedUntil));
 }

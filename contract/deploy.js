@@ -1,6 +1,7 @@
 // @ts-check
 import fs from 'fs';
 import { E } from '@agoric/eventual-send';
+import harden from '@agoric/harden';
 
 // This script takes our contract code, installs it on Zoe, and makes
 // the installation publicly available. Our backend API script will
@@ -11,6 +12,8 @@ import { E } from '@agoric/eventual-send';
  * @property {(path: string) => { moduleFormat: string, source: string }} bundleSource
  * @property {(path: string) => string} pathResolve
  */
+
+const TIP_ISSUER_PETNAME = process.env.TIP_ISSUER_PETNAME || 'moola';
 
 /**
  * 
@@ -41,6 +44,8 @@ export default async function deployContract(referencesPromise, { bundleSource, 
     // access the object through the registry.
     registry,
 
+    wallet,
+
   }  = references;
 
   // First, we must bundle up our contract code (./src/contract.js)
@@ -55,6 +60,18 @@ export default async function deployContract(referencesPromise, { bundleSource, 
   // instance (see the api deploy script in this repo to see an
   // example of how to use the installationHandle to make a new contract
   // instance.)
+  
+  // getIssuers returns an array, because we currently cannot
+  // serialize maps. We can immediately create a map using the array,
+  // though. https://github.com/Agoric/agoric-sdk/issues/838
+  const issuersArray = await E(wallet).getIssuers();
+  const issuers = new Map(issuersArray);
+  const tipIssuer = issuers.get(TIP_ISSUER_PETNAME);
+  const issuerKeywordRecord = harden({ Tip: tipIssuer });
+  const adminInvite = await E(zoe).makeInstance(
+    installationHandle,
+    issuerKeywordRecord,
+    { timerService: referencesPromise.timerService });
   
   // To share the installationHandle, we're going to put it in the
   // registry. The registry is a shared, on-chain object that maps

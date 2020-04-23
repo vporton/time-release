@@ -9,6 +9,8 @@ import { makeTimeRelease } from './time-release';
  * @type {import('@agoric/zoe').MakeContract}
  */
 export const makeContract = harden(zcf => {
+  const { terms: { timerService } = {} } = zcf.getInstanceRecord();
+
   // Create the internal token mint
   const { issuer, mint, amountMath } = produceIssuer(
     'Futures',
@@ -27,7 +29,7 @@ export const makeContract = harden(zcf => {
       const offer = zcf.getOffer(userOfferHandle);
       const lockedPayment = offer.give.payment;
       const handle = offer.give.handle; // can get money only using this handle
-      const lock = makeTimeRelease(zcf, lockedPayment, offer.give.date);
+      const lock = makeTimeRelease(zcf, timerService, lockedPayment, offer.give.date);
 
       const wrapperAmount = wrapperToken(harden([harden(lock)]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
