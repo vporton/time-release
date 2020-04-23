@@ -78,7 +78,7 @@ export default async function deployContract(referencesPromise, { bundleSource, 
   // strings to objects. We will need to provide a starting name when
   // we register our installationHandle, and the registry will add a
   // suffix creating a guaranteed unique name.
-  const CONTRACT_NAME = 'encouragement';
+  const CONTRACT_NAME = 'time-release';
   const INSTALLATION_REG_KEY = await E(registry).register(`${CONTRACT_NAME}installation`, installationHandle);
   console.log('- SUCCESS! contract code installed on Zoe');
   console.log(`-- Contract Name: ${CONTRACT_NAME}`);
