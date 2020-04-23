@@ -29,7 +29,7 @@ export const makeContract = harden(zcf => {
 
     // the contract creates an offer {give: wrapper, want: nothing} with the time release wrapper
     const sendHook = (lockedPayment, handle, date) => userOfferHandle => {
-      const lock = makeTimeRelease(zcf, timerService, lockedPayment);
+      const lock = makeTimeRelease(zcf, timerService, lockedPayment, date);
 
       const wrapperAmount = wrapperToken(harden([harden(lock)]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
