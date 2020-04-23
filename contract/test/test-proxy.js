@@ -97,7 +97,7 @@ test(`Time release contract`, async t => {
               }) => {
                 const wrapperPayment = await (await payout).Wrapper;
                 const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
-                const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0][0]); // FIXME
+                const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0][0]);
                 const timeRelease = payment.extent[0][0];
                 const realPayment = await timeRelease.getPayment()
                 if(!positive) {

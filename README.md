@@ -1,43 +1,28 @@
-# Encouragement Dapp
+This repository contains the `proxy.js` smart contract that
+locks the money under a certain time moment.
 
-The Encouragement Dapp is the simplest [Agoric
-Dapp](https://agoric.com/documentation/dapps/). It
-demonstrates the three important parts of
-a dapp and how they should be connected:
-1. the browser UI (the frontend)
-2. the API server (the backend)
-3. the on-chain contract
+# Usage
 
-This dapp starts a local
-blockchain on your computer, and deploys a basic contract to that
-blockchain. It does not currently deploy or connect to the Agoric testnet.
+Sender:
 
-This particular dapp UI is written in vanilla JS for simplicity (as
-opposed to using a framework).
+    const handle = // unique handle (to disallow users not having the handle to withdraw our payment)
+    const data = // date of the payment  
+    const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(harden(payment), harden(handle), harden(date))());
+    const aliceProposal = {};
+    return zoe
+    .offer(sendInvite, harden(aliceProposal), {})
 
-## Functionality
+Receiver:
 
-The Encouragement Dapp:
+    const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
+    const bobProposal = {}
+    return zoe
+    .offer(receiveInvite, harden(bobProposal), {})
+    // ...
+    const wrapperPayment = await (await payout).Wrapper;
+    const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
+    const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0][0]);
+    const timeRelease = payment.extent[0][0];
+    const realPayment = await timeRelease.getPayment()
 
-1. Subscribes to contract notifications via the API server
-2. Accesses your Agoric wallet, and
-3. At the user's request, either:
-
-    1. requests some free encouragement, or
-    2. proposes (via the user's wallet and Zoe) exchanging a Tip for
-       some Encouragement (the tip is not yet sent to the Zoe
-       contract, but you will still get some encouragement.)
-
-To learn more about how to build Agoric Dapps, please see the [Dapp Guide](https://agoric.com/documentation/dapps/).
-
-Here's the interface:
-
-![Screenshot Before Encouragement](readme-assets/before.png)
-
-and after we click the "Encourage Me!" button:
-
-![Screenshot After Encouragement](readme-assets/after.png)
-
-## TODO
-
-Things we need to fix are listed in [the Github issues for this repository](https://github.com/Agoric/dapp-encouragement/issues).
+Now `realPayment` is either the payment we can receive or null if the time has not yet come.
