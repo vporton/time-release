@@ -88,20 +88,28 @@ export const makeContract = harden(zcf => {
         });
     }
     
-    const makeInvite = () =>
+    const makeSendInvite = () =>
       inviteAnOffer(
         harden({
           sendHook: sendHook,
-          receiveHook: receiveHook,
           customProperties: { inviteDesc: 'offer' },
+        }),
+      );
+
+    const makeReceiveInvite = () =>
+      inviteAnOffer(
+        harden({
+          receiveHook: receiveHook,
+          customProperties: { inviteDesc: 'get money' },
         }),
       );
 
     return harden({
       invite: zcf.makeInvitation(adminHook),
       publicAPI: {
-        makeInvite,
-        currency: wrapperToken,
+        makeSendInvite,
+        makeReceiveInvite,
+        //currency: wrapperToken,
         issuer: issuer,
       },
     });

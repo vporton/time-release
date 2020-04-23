@@ -6,7 +6,7 @@ import harden from '@agoric/harden';
 import produceIssuer from '@agoric/ertp';
 import { E } from '@agoric/eventual-send';
 import { makeZoe } from '@agoric/zoe';
-import { buildManualTimer } from '@agoric/zoe/tools/manualTimer'
+import buildManualTimer from '@agoric/zoe/tools/manualTimer'
 
 const operaConcertTicketRoot = `${__dirname}/../src/contracts/proxy.js`;
 
@@ -63,6 +63,30 @@ test(`Time release contract`, async t => {
         });
     },
   )
+
+  // contractReadyP.then(({ publicAPI }) => {
+  //   const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite());
+  //   const handle = {}; // secret handler
+  //   const currencyIssuer = produceIssuer('BaytownBucks')
+  //   const { mint: baytownBucksMint, issuer } = currencyIssuer;
+  //   const baytownBucks = issuer.getAmountMath().make;
+  //   const payment = baytownBucksMint.mint(baytownBucks(1000));
+  //   const aliceProposal = { give: {payment, handler: handle, date: 0}}
+  //   zoe
+  //     .offer(sendInvite, aliceProposal, {})
+  //     .then(({ payout: payoutP }) => {
+  //       console.log(payoutP);
+  //     });
+  //   return { publicAPI };
+  // }).then(({ publicAPI }) => {
+  //   const bobProposal = { want: {handle}}
+  //   zoe
+  //     .offer(sendInvite, bobProposal, {})
+  //     .then(({ payout: payoutP }) => {
+  //       console.log(payoutP);
+  //     });
+  //   return { publicAPI };
+  // })
   .catch(err => {
     console.error('Error in last Opera part', err);
     t.fail('  error');
