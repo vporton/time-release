@@ -62,10 +62,10 @@ test(`Time release contract`, async t => {
 
     const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
 
-    function pushPullMoney(date) {
+    async function pushPullMoney(date, positive) {
       const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(harden(payment), harden(handle), harden(date))());
       const aliceProposal = {};
-      zoe
+      return zoe
         .offer(sendInvite, harden(aliceProposal), {})
         .then(
           async ({
@@ -86,7 +86,7 @@ test(`Time release contract`, async t => {
         .then(() => {
           const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
           const bobProposal = {}
-          zoe
+          return zoe
             .offer(receiveInvite, harden(bobProposal), {})
             .then(
               async ({
@@ -100,21 +100,30 @@ test(`Time release contract`, async t => {
                 const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0][0]); // FIXME
                 const timeRelease = payment.extent[0][0];
                 const realPayment = await timeRelease.getPayment()
-                t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
-      
-                return {
-                  publicAPI,
-                  operaPayout: payout,
-                  complete,
-                };
+                if(!positive) {
+                  t.equal(realPayment, null, `There is no payment yet.`)
+                } else {
+                  t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
+        
+                  return {
+                    publicAPI,
+                    operaPayout: payout,
+                    complete,
+                  };
+                }
               }
             )
+        })
+        .then(() => {
+          return { publicAPI };
         });
-      return { publicAPI };
     }
 
-    pushPullMoney(0);
-    return pushPullMoney(0);
+    return pushPullMoney(1, false)
+      .then((x) => {
+        E(timerService).tick("Going to the future");
+        return pushPullMoney(1, true);
+      });
   })
   .catch(err => {
     console.error('Error in last Time Release part', err);
