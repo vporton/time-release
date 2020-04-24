@@ -35,6 +35,8 @@ const bob = {
 }
 ```
 
+`timeRelease` also has `getIssuer()` and `getAmount()` methods to query the payment data.
+
 Sender:
 
 ```
