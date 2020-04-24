@@ -69,7 +69,7 @@ test(`Time release contract`, async t => {
           const timeRelease = amount.extent[0][0];
 
           const expectedAmount = await timeRelease.getAmount();
-          // t.equal(expectedAmount.extent, 1000, `correct expected payment amount`);
+          t.equal(expectedAmount.extent, 1000, `correct expected payment amount`);
 
           const realPayment = await timeRelease.getPayment();
           if(!positive) {
