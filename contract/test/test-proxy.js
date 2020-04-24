@@ -36,10 +36,12 @@ test(`Time release contract`, async t => {
                   .then(
                     async ({
                       // outcome: outcomeP,
-                      // payout,
+                      payout,
                       // cancelObj: { cancel: complete },
                       // offerHandle,
                     }) => {
+                      // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+
                       return {
                         publicAPI,
                         // operaPayout: payout,
@@ -69,7 +71,6 @@ test(`Time release contract`, async t => {
           const expectedAmount = await timeRelease.getAmount();
           // t.equal(expectedAmount.extent, 1000, `correct expected payment amount`);
 
-          console.log('getPayment')
           const realPayment = await timeRelease.getPayment();
           if(!positive) {
             t.equal(realPayment, null, `There is no payment yet.`)
@@ -91,12 +92,11 @@ test(`Time release contract`, async t => {
         .then(
           async ({
             // outcome: outcomeP,
-            // payout,
+            payout,
             // cancelObj: { cancel: complete },
             // offerHandle,
           }) => {
-            // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper);
-            // console.log(amount);
+            const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
 
             return {
               publicAPI,

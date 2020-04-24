@@ -36,14 +36,12 @@ export const makeContract = harden(zcf => {
       const wrapperAmount = wrapperToken(harden([[harden(lock), ++nonce]]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
 
-      return receiver.receivePayment(wrapperPayment)
-        .then(() => {
-          zcf.reallocate(
-            [userOfferHandle],
-            [zcf.getCurrentAllocation(userOfferHandle)],
-            );
-          zcf.complete([userOfferHandle]);
-        });
+      zcf.reallocate(
+        [userOfferHandle],
+        [zcf.getCurrentAllocation(userOfferHandle)],
+        );
+      zcf.complete([userOfferHandle]);
+      return await receiver.receivePayment(wrapperPayment); // wait until it is received
     }
 
     const { inviteAnOffer } = makeZoeHelpers(zcf);   
