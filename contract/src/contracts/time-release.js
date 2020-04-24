@@ -14,7 +14,9 @@ class _TimeRelease {
             // const zoe = zcf.getZoeService();
             return /*zoe.isOfferActive(_offer) &&*/ await E(_timerService).getCurrentTimestamp() >= _lockedUntil ? _payment : null;
         }
-        // FIXME: query issuer
+        this.getIssuer = function() {
+            return _issuer;
+        }
         this.getAmount = async function() {
             return await _issuer.getAmountOf(_payment);
         }

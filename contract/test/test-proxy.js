@@ -70,6 +70,7 @@ test(`Time release contract`, async t => {
 
           const expectedAmount = await timeRelease.getAmount();
           t.equal(expectedAmount.extent, 1000, `correct expected payment amount`);
+          t.equal(timeRelease.getIssuer().getBrand().getAllegedName(), 'BaytownBucks', 'payment was in BaytownBucks');
 
           const realPayment = await timeRelease.getPayment();
           if(!positive) {
