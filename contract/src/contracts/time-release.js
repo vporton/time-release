@@ -12,13 +12,10 @@ class _TimeRelease {
         this.getPayment = async function() {
             // if(!_offer) return;
             // const zoe = zcf.getZoeService();
-            console.log("INSIDE")
-            console.log("INSIDE_VALUE", await E(_timerService).getCurrentTimestamp())
             return /*zoe.isOfferActive(_offer) &&*/ await E(_timerService).getCurrentTimestamp() >= _lockedUntil ? _payment : null;
         }
         // FIXME: query issuer
         this.getAmount = async function() {
-            console.log("ip", _payment);
             return await _issuer.getAmountOf(_payment);
         }
     }
