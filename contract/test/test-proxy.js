@@ -7,7 +7,7 @@ import { E } from '@agoric/eventual-send';
 import { makeZoe } from '@agoric/zoe';
 import buildManualTimer from '@agoric/zoe/tools/manualTimer'
 
-const operaConcertTicketRoot = `${__dirname}/../src/contracts/proxy.js`;
+const contractRoot = `${__dirname}/../src/contracts/proxy.js`;
 
 test(`Time release contract`, async t => {
   // Setup initial conditions
@@ -16,7 +16,7 @@ test(`Time release contract`, async t => {
 
   const timerService = buildManualTimer(console.log);
  
-  const contractReadyP = bundleSource(operaConcertTicketRoot).then(
+  const contractReadyP = bundleSource(contractRoot).then(
     ({ source, moduleFormat }) => {
       const installationHandle = zoe.install(source, moduleFormat);
 
