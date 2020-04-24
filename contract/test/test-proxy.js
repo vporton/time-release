@@ -74,8 +74,6 @@ test(`Time release contract`, async t => {
 
           return {
             publicAPI,
-            // operaPayout: payout,
-            // complete,
           };
         }
       }}
@@ -96,42 +94,9 @@ test(`Time release contract`, async t => {
 
             return {
               publicAPI,
-              // operaPayout: payout,
-              // complete,
             };
           },
         )
-        // .then(() => {
-        //   const receiveInvite = inviteIssuer.claim(publicAPI.makeReceiveInvite(handle)());
-        //   const bobProposal = {}
-        //   return zoe
-        //     .offer(receiveInvite, harden(bobProposal), {})
-        //     .then(
-        //       async ({
-        //         outcome: outcomeP,
-        //         payout,
-        //         cancelObj: { cancel: complete },
-        //         offerHandle,
-        //       }) => {
-        //         const wrapperPayment = await (await payout).Wrapper;
-        //         const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
-        //         const payment = await E(publicAPI.issuer).getAmountOf(amount.extent[0][0]);
-        //         const timeRelease = payment.extent[0][0];
-        //         const realPayment = await timeRelease.getPayment()
-        //         if(!positive) {
-        //           t.equal(realPayment, null, `There is no payment yet.`)
-        //         } else {
-        //           t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
-        
-        //           return {
-        //             publicAPI,
-        //             operaPayout: payout,
-        //             complete,
-        //           };
-        //         }
-        //       }
-        //     )
-        // })
         .then(() => {
           return { publicAPI };
         });
