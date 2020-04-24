@@ -64,13 +64,11 @@ test(`Time release contract`, async t => {
       const bob = positive => { return {
         receivePayment: async (wrapperPayment) => {
           const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
-          // // const payment = await issuer.getAmountOf(amount.extent[0][0]);
           const timeRelease = amount.extent[0][0];
           const realPayment = await timeRelease.getPayment()
           if(!positive) {
             t.equal(realPayment, null, `There is no payment yet.`)
           } else {
-            console.log(realPayment)
             t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
           }
 

@@ -10,7 +10,8 @@ class _TimeRelease {
         }
         this.getPayment = async function() {
             // if(!_offer) return;
-            const zoe = zcf.getZoeService();
+            // const zoe = zcf.getZoeService();
+            // console.log(await E(timerService).getCurrentTimestamp(), _lockedUntil)
             return /*zoe.isOfferActive(_offer) &&*/ await E(timerService).getCurrentTimestamp() >= _lockedUntil ? _payment : null;
         }
         // SECURITY: Don't forget to call this function,
