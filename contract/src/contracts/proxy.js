@@ -36,71 +36,9 @@ export const makeContract = harden(zcf => {
       const wrapperAmount = wrapperToken(harden([[harden(lock), ++nonce]]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
 
-      // let tempContractHandle;
-      // const contractSelfInvite = zcf.makeInvitation(
-      //   offerHandle => (tempContractHandle = offerHandle),
-      // );
-
-      // console.log(timerService.getCurrentTimestamp(), await wrapperAmount.extent[0][0].getPayment())
       return receiver.receivePayment(wrapperPayment);
-
-      //payments.set(handle, wrapperPayment);
-
-      // zcf
-      //   .getZoeService()
-      //   .offer(
-      //     contractSelfInvite,
-      //     harden({ /*give: { Wrapper: wrapperAmount }*/ }),
-      //     harden({ Wrapper: wrapperPayment }),
-      //   ).then(() => {
-      //     // Don't forget to call this, otherwise the other side won't be able to get the money:
-      //     lock.setOffer(tempContractHandle);
-
-      //     zcf.reallocate(
-      //       [tempContractHandle, userOfferHandle],
-      //       [
-      //         zcf.getCurrentAllocation(userOfferHandle),
-      //         zcf.getCurrentAllocation(tempContractHandle),
-      //       ],
-      //     );
-      //     zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
-      //     return `Payment scheduled.`;
-      //   });
     }
 
-    // const receiveHook = handle => userOfferHandle => {
-    //   const payment = payments.get(handle);
-    //   if(!payment) {
-    //     return `Trying to get non-exisiting payment.`;
-    //   }
-    //   const wrapperAmount = wrapperToken(harden([[payment, ++nonce]]));
-    //   const wrapperPayment = mint.mintPayment(wrapperAmount);
-
-    //   let tempContractHandle;
-    //   const contractSelfInvite = zcf.makeInvitation(
-    //     offerHandle => (tempContractHandle = offerHandle),
-    //   );
-
-    //   zcf
-    //     .getZoeService()
-    //     .offer(
-    //       contractSelfInvite,
-    //       harden({ give: { Wrapper: wrapperAmount } }),
-    //       harden({ Wrapper: wrapperPayment }),
-    //     ).then(() => {
-    //       zcf.reallocate(
-    //         [tempContractHandle, userOfferHandle],
-    //         [
-    //           zcf.getCurrentAllocation(userOfferHandle),
-    //           zcf.getCurrentAllocation(tempContractHandle),
-    //         ],
-    //       );
-    //       zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
-    //       payments.delete(handle); // We already delivered it.
-    //       return `Scheduled payment delivered.`;
-    //     });
-    // }
-    
     const { inviteAnOffer } = makeZoeHelpers(zcf);   
     
     const makeSendInvite = (receiver, payment, date) => () =>
@@ -110,14 +48,6 @@ export const makeContract = harden(zcf => {
           customProperties: { inviteDesc: 'offer' },
         }),
       );
-
-    // const makeReceiveInvite = handle => () =>
-    //   inviteAnOffer(
-    //     harden({
-    //       offerHook: receiveHook(handle),
-    //       customProperties: { inviteDesc: 'get money' },
-    //     }),
-    //   );
 
     return harden({
       invite: zcf.makeInvitation(adminHook),
