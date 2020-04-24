@@ -20,6 +20,8 @@ class _TimeRelease {
         this.getAmount = async function() {
             return await _issuer.getAmountOf(_payment);
         }
+        const that = this;
+        +(async function() { await that.getAmount() })(); // to throw an exception if issuer and payment don't match.
     }
 }
 
