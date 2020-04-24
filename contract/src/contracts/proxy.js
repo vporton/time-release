@@ -30,8 +30,8 @@ export const makeContract = harden(zcf => {
     }
 
     // the contract creates an offer {give: wrapper, want: nothing} with the time release wrapper
-    const sendHook = (receiver, lockedPayment, date) => async userOfferHandle => {
-      const lock = makeTimeRelease(zcf, timerService, lockedPayment, date);
+    const sendHook = (receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
+      const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
 
       const wrapperAmount = wrapperToken(harden([[harden(lock), ++nonce]]));
       const wrapperPayment = mint.mintPayment(wrapperAmount);
@@ -48,10 +48,10 @@ export const makeContract = harden(zcf => {
 
     const { inviteAnOffer } = makeZoeHelpers(zcf);   
     
-    const makeSendInvite = (receiver, payment, date) => () =>
+    const makeSendInvite = (receiver, paymentIssuer, payment, date) => () =>
       inviteAnOffer(
         harden({
-          offerHook: sendHook(receiver, payment, date),
+          offerHook: sendHook(receiver, paymentIssuer, payment, date),
           customProperties: { inviteDesc: 'offer' },
         }),
       );

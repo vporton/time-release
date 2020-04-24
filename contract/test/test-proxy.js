@@ -65,7 +65,12 @@ test(`Time release contract`, async t => {
         receivePayment: async (wrapperPayment) => {
           const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
           const timeRelease = amount.extent[0][0];
-          const realPayment = await timeRelease.getPayment()
+
+          const expectedAmount = await timeRelease.getAmount();
+          // t.equal(expectedAmount.extent, 1000, `correct expected payment amount`);
+
+          console.log('getPayment')
+          const realPayment = await timeRelease.getPayment();
           if(!positive) {
             t.equal(realPayment, null, `There is no payment yet.`)
           } else {
@@ -78,7 +83,8 @@ test(`Time release contract`, async t => {
         }
       }}
 
-      const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(bob(positive), harden(payment), harden(date))());
+      const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(
+        bob(positive), harden(issuer), harden(payment), harden(date))());
       const aliceProposal = {};
       return zoe
         .offer(sendInvite, harden(aliceProposal), {})
@@ -103,8 +109,8 @@ test(`Time release contract`, async t => {
     }
 
     return pushPullMoney(1, false)
-      .then((x) => {
-        E(timerService).tick("Going to the future");
+      .then(async (x) => {
+        await E(timerService).tick("Going to the future");
         return pushPullMoney(1, true);
       });
   })
