@@ -41,7 +41,7 @@ Sender:
 
 ```
 const date = // date of the payment  
-const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(bob, harden(payment), harden(date))());
+const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(bob, harden(issuer), harden(payment), harden(date))());
 const aliceProposal = {};
 return zoe
     .offer(sendInvite, harden(aliceProposal), {})
