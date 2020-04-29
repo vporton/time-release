@@ -74,9 +74,10 @@ test(`Time release contract`, async t => {
 
           const realPayment = await timeRelease.getPayment();
           if(!positive) {
-            t.equal(realPayment, null, `There is no payment yet.`)
+            t.equal(realPayment, null, `There is no payment yet.`);
           } else {
-            t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`)
+            t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`);
+            // Now the payment can be deposited.
           }
 
           return {
