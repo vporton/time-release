@@ -34,18 +34,14 @@ export const makeContract = harden(zcf => {
 
   const createToken = (issuer) => {
     nonces.set(++nonce, receiver);
-    //payments.set(receiver, lock); // FIXME: move
     await zcf.addNewIssuer(issuer, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/;
     return nonce;
   };
 
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
   const sendHook = (receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
-    const adminHook = userOfferHandle => {
-    }
-
     const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
-    const { inviteAnOffer } = makeZoeHelpers(zcf);   
+    payments.set(receiver, lock);
 
     // await receiver.receivePayment(wrapperPayment); // wait until it is received
     const wrapperAmount = wrapperToken(harden([nonce]));
@@ -94,7 +90,12 @@ export const makeContract = harden(zcf => {
           return `Pledge accepted.`;
         });
     }
-        
+
+    const { inviteAnOffer } = makeZoeHelpers(zcf);   
+
+    const adminHook = userOfferHandle => {
+    }
+
     const makeSendInvite = (receiver, paymentIssuer, payment, date) => () =>
       inviteAnOffer(
         harden({
