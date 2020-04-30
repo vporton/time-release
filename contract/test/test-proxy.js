@@ -65,6 +65,7 @@ test(`Time release contract`, async t => {
 
     async function pushPullMoney(date, positive) {
       const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
+      console.log(wrapperIssuer.getAllegedName());
 
       const bob = positive => { return {
         receivePayment: async (wrapperPayment) => {
