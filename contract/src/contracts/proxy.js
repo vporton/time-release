@@ -27,13 +27,13 @@ export const makeContract = harden(zcf => {
 
   const createToken = (issuer) => {
     // Create the token mint
-    const { issuer } = produceIssuer(
+    const { issuer: wrapperIssuer } = produceIssuer(
       'Wrapper' + nonce,
       'set',
     );
 
-    await zcf.addNewIssuer(issuer, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/;
-    return { issuer, nonce };
+    zcf.addNewIssuer(issuer, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/
+      .then(() => { wrapperIssuer: issuer, nonce });
   };
 
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
@@ -116,4 +116,5 @@ export const makeContract = harden(zcf => {
         issuer: issuer,
       },
     });
+  };
 });
