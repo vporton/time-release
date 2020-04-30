@@ -25,16 +25,16 @@ export const makeContract = harden(zcf => {
   // );
   // const wrapperToken0 = amountMath0.make;
 
-  const createToken = (issuer) => {
+  const createToken = (issuer0) => {
     // Create the token mint
     const { issuer: wrapperIssuer } = produceIssuer(
       'Wrapper' + nonce,
       'set',
     );
 
-    zcf.addNewIssuer(issuer, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/
+    return zcf.addNewIssuer(issuer0, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/
       .then(() => {
-        return { issuer: wrapperIssuer, nonce }
+        return { issuer: wrapperIssuer, nonce };
       });
   };
 

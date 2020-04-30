@@ -23,48 +23,49 @@ test(`Time release contract`, async t => {
       return zoe
         .makeInstance(installationHandle, {}, { timerService })
         .then(myInvite => {
-          // return inviteIssuer
-          //   .getAmountOf(myInvite)
-          //   .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
-          //     const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
+          return inviteIssuer
+            .getAmountOf(myInvite)
+            .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
+              const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
 
-          //     return (
-          //       zoe
-          //         .offer(myInvite, harden({}))
-          //         // cancel will be renamed complete: https://github.com/Agoric/agoric-sdk/issues/835
-          //         // cancelObj exists because of a current limitation in @agoric/marshal : https://github.com/Agoric/agoric-sdk/issues/818
-          //         .then(
-          //           async ({
-          //             // outcome: outcomeP,
-          //             payout,
-          //             // cancelObj: { cancel: complete },
-          //             // offerHandle,
-          //           }) => {
-          //             // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+              return (
+                zoe
+                  .offer(myInvite, harden({}))
+                  // cancel will be renamed complete: https://github.com/Agoric/agoric-sdk/issues/835
+                  // cancelObj exists because of a current limitation in @agoric/marshal : https://github.com/Agoric/agoric-sdk/issues/818
+                  .then(
+                    async ({
+                      // outcome: outcomeP,
+                      payout,
+                      // cancelObj: { cancel: complete },
+                      // offerHandle,
+                    }) => {
+                      // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
 
-          //             return {
-          //               publicAPI,
-          //               // operaPayout: payout,
-          //               // complete,
-          //             };
-          //           },
-          //         )
-          //     );
-          //   });
+                      return {
+                        publicAPI,
+                        // operaPayout: payout,
+                        // complete,
+                      };
+                    },
+                  )
+              );
+            });
         });
     },
   )
 
   contractReadyP.then(({ publicAPI }) => {
-    // const currencyIssuer = produceIssuer('BaytownBucks')
-    // const { mint: baytownBucksMint, issuer } = currencyIssuer;
-    // const baytownBucks = issuer.getAmountMath().make;
+    const currencyIssuer = produceIssuer('BaytownBucks')
+    const { mint: baytownBucksMint, issuer } = currencyIssuer;
+    const baytownBucks = issuer.getAmountMath().make;
 
-    // const amount = baytownBucks(1000);
-    // const payment = baytownBucksMint.mintPayment(amount);
+    const amount = baytownBucks(1000);
+    const payment = baytownBucksMint.mintPayment(amount);
 
     async function pushPullMoney(date, positive) {
-    //   const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
+      const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
+      console.log(wrapperIssuer, nonce)
 
     //   const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(
     //     harden(nonce), harden(wrapperIssuer), harden(receiver), harden(issuer), harden(payment), harden(date))());
@@ -138,7 +139,7 @@ test(`Time release contract`, async t => {
     //     });
     }
 
-    // return pushPullMoney(1, false)
+    return pushPullMoney(1, false)
     //   .then(async (x) => {
     //     await E(timerService).tick("Going to the future");
     //     return pushPullMoney(1, true);
