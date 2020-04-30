@@ -119,6 +119,7 @@ export const makeContract = harden(zcf => {
     publicAPI: {
       createToken,
       makeSendInvite,
+      futureIssuer: issuer0,
     },
   });
 });

@@ -65,11 +65,10 @@ test(`Time release contract`, async t => {
 
     async function pushPullMoney(date, positive) {
       const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
-      await publicAPI.createToken(issuer);
 
       const bob = positive => { return {
-        receivePayment: async (wrapperPayment) => {
-          const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
+        receivePayment: async (futurePayment) => {
+          // const amount = await E(publicAPI.futureIssuer).getAmountOf(futurePayment); // FIXME: uncomment
           // const timeRelease = amount.extent[0][0];
 
           // const expectedAmount = await timeRelease.getAmount();
@@ -103,8 +102,8 @@ test(`Time release contract`, async t => {
               // cancelObj: { cancel: complete },
               // offerHandle,
             }) => {
-              const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
-              console.log(amount);
+              // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+              // console.log(amount);
 
               return {
                 publicAPI,
@@ -118,9 +117,17 @@ test(`Time release contract`, async t => {
 
       const give = {};
       give['Wrapper' + nonce] = amount;
+      var paymentDesc = {};
+      paymentDesc['Wrapper' + nonce] = payment;
       const aliceProposal = { give: give };
+
+      console.log(aliceProposal);
+      console.log(paymentDesc);
+      // console.log(payment.getAllegedBrand().getAllegedName());
+
+      // FIXME: This operator prints "payment not found for BaytownBucks"
       return zoe
-        .offer(sendInvite, harden(aliceProposal), {})
+        .offer(sendInvite, harden(aliceProposal), harden(paymentDesc))
         .then(
           async ({
             // outcome: outcomeP,
@@ -128,8 +135,8 @@ test(`Time release contract`, async t => {
             // cancelObj: { cancel: complete },
             // offerHandle,
           }) => {
-            const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
-            console.log(amount);
+            // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+            // console.log(amount);
 
             return {
               publicAPI,
