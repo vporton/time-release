@@ -26,21 +26,20 @@ export const makeContract = harden(zcf => {
   // const wrapperToken0 = amountMath0.make;
 
   const createToken = (issuer) => {
-    nonces.set(++nonce, receiver);
-
     // Create the token mint
-    const { issuer, mint, amountMath } = produceIssuer(
+    const { issuer } = produceIssuer(
       'Wrapper' + nonce,
       'set',
     );
-    // const wrapperToken = amountMath.make;
 
     await zcf.addNewIssuer(issuer, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/;
-    return { nonce, issuer };
+    return { issuer, nonce };
   };
 
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
   const sendHook = (nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
+    nonces.set(++nonce, receiver);
+
     const wrapperAmountMath = wrapperIssuer.getAmountMath();
     const wrapperToken = wrapperAmountMath.make;
 
@@ -51,7 +50,7 @@ export const makeContract = harden(zcf => {
     const wrapperAmount = wrapperToken(harden([nonce]));
     const wrapperPayment = mint.mintPayment(wrapperAmount);
   
-    return zcf
+    await zcf
       .getZoeService()
       .offer(
         contractSelfInvite,
@@ -70,7 +69,7 @@ export const makeContract = harden(zcf => {
           ],
         );
         zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
-      }).then(() => {
+
         return zcf
           .getZoeService()
           .offer(
@@ -80,7 +79,7 @@ export const makeContract = harden(zcf => {
           ).then(async () => {
             // Don't forget to call this, otherwise the other side won't be able to get the money:
             //lock.setOffer(tempContractHandle);
-    
+
             //receiver.receivePayment(receiverWrapperPayment)
             zcf.reallocate(
               [tempContractHandle, userOfferHandle],
@@ -91,19 +90,18 @@ export const makeContract = harden(zcf => {
             );
             zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
             return `Pledge accepted.`;
-          });
       });
-    }
+    });
 
     const { inviteAnOffer } = makeZoeHelpers(zcf);   
 
     const adminHook = userOfferHandle => {
     }
 
-    const makeSendInvite = (receiver, paymentIssuer, payment, date) => () =>
+    const makeSendInvite = (nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date) => () =>
       inviteAnOffer(
         harden({
-          offerHook: sendHook(receiver, paymentIssuer, payment, date),
+          offerHook: sendHook(nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date),
           customProperties: { inviteDesc: 'offer' },
         }),
       );
