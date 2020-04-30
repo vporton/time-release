@@ -65,7 +65,7 @@ test(`Time release contract`, async t => {
 
     async function pushPullMoney(date, positive) {
       const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
-      console.log(wrapperIssuer.getAllegedName());
+      await publicAPI.createToken(issuer);
 
       const bob = positive => { return {
         receivePayment: async (wrapperPayment) => {
@@ -116,7 +116,9 @@ test(`Time release contract`, async t => {
           });
       }
 
-      const aliceProposal = { give: amount };
+      const give = {};
+      give['Wrapper' + nonce] = amount;
+      const aliceProposal = { give: give };
       return zoe
         .offer(sendInvite, harden(aliceProposal), {})
         .then(
