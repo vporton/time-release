@@ -26,51 +26,31 @@ export const makeContract = harden(zcf => {
 
   let nonce = 0;
 
-  const { /*issuer0, mint0, amountMath0*/ } = produceIssuer(
-    'Wrapper',
-    'set',
-  );
+  // const { /*issuer0, mint0, amountMath0*/ } = produceIssuer(
+  //   'Wrapper',
+  //   'set',
+  // );
   // const wrapperToken0 = amountMath0.make;
-  return zcf.addNewIssuer(issuer, 'Wrapper').then(() => {
-    // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
-    const sendHook = (receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
-      const adminHook = userOfferHandle => {
-      }
 
-      const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
-      nonces.set(++nonce, receiver);
-      payments.set(receiver, lock);
+  const createToken = (issuer) => {
+    nonces.set(++nonce, receiver);
+    //payments.set(receiver, lock); // FIXME: move
+    await zcf.addNewIssuer(issuer, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/;
+    return nonce;
+  };
 
-      function afterDynamicallyAddingNewIssuer() {
-        const { inviteAnOffer } = makeZoeHelpers(zcf);   
-
-        const makeSendInvite = (receiver, paymentIssuer, payment, date) => () =>
-          inviteAnOffer(
-            harden({
-              offerHook: sendHook(receiver, paymentIssuer, payment, date),
-              customProperties: { inviteDesc: 'offer' },
-            }),
-          );
-
-        // await receiver.receivePayment(wrapperPayment); // wait until it is received
-      
-        return harden({
-          invite: zcf.makeInvitation(adminHook),
-          publicAPI: {
-            makeSendInvite,
-            // makeReceiveInvite,
-            //currency: wrapperToken,
-            issuer: issuer,
-          },
-        });
-      }
-
-      return zcf.addNewIssuer(issuer, 'Wrapper' + nonce).then(afterDynamicallyAddingNewIssuer);
+  // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
+  const sendHook = (receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
+    const adminHook = userOfferHandle => {
     }
 
+    const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
+    const { inviteAnOffer } = makeZoeHelpers(zcf);   
+
+    // await receiver.receivePayment(wrapperPayment); // wait until it is received
     const wrapperAmount = wrapperToken(harden([nonce]));
     const wrapperPayment = mint.mintPayment(wrapperAmount);
-
+  
     await zcf
       .getZoeService()
       .offer(
@@ -80,7 +60,7 @@ export const makeContract = harden(zcf => {
       ).then(async () => {
         // Don't forget to call this, otherwise the other side won't be able to get the money:
         //lock.setOffer(tempContractHandle); // FIXME: Remove
-
+  
         receiver.receivePayment(receiverWrapperPayment)
         zcf.reallocate(
           [tempContractHandle, userOfferHandle],
@@ -91,7 +71,7 @@ export const makeContract = harden(zcf => {
         );
         zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
       });
-
+  
       return zcf
         .getZoeService()
         .offer(
@@ -101,7 +81,7 @@ export const makeContract = harden(zcf => {
         ).then(async () => {
           // Don't forget to call this, otherwise the other side won't be able to get the money:
           //lock.setOffer(tempContractHandle);
-
+  
           //receiver.receivePayment(receiverWrapperPayment)
           zcf.reallocate(
             [tempContractHandle, userOfferHandle],
@@ -113,5 +93,26 @@ export const makeContract = harden(zcf => {
           zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
           return `Pledge accepted.`;
         });
-  });
+    }
+        
+    const makeSendInvite = (receiver, paymentIssuer, payment, date) => () =>
+      inviteAnOffer(
+        harden({
+          offerHook: sendHook(receiver, paymentIssuer, payment, date),
+          customProperties: { inviteDesc: 'offer' },
+        }),
+      );
+
+    return harden({
+      invite: zcf.makeInvitation(adminHook),
+      publicAPI: {
+        createToken,
+        makeSendInvite,
+        // makeReceiveInvite,
+        //currency: wrapperToken,
+        issuer: issuer,
+      },
+    });
+}
+
 });

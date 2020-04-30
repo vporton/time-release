@@ -60,9 +60,33 @@ test(`Time release contract`, async t => {
     const { mint: baytownBucksMint, issuer } = currencyIssuer;
     const baytownBucks = issuer.getAmountMath().make;
 
-    const payment = baytownBucksMint.mintPayment(baytownBucks(1000));
+    const amount = baytownBucks(1000);
+    const payment = baytownBucksMint.mintPayment(amount);
 
     async function pushPullMoney(date, positive) {
+      const aliceProposal = {give: amount};
+      const alice = () => {
+        return zoe
+          .offer(sendInvite, harden(aliceProposal), {})
+          .then(
+            async ({
+              // outcome: outcomeP,
+              payout,
+              // cancelObj: { cancel: complete },
+              // offerHandle,
+            }) => {
+              const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+
+              return {
+                publicAPI,
+              };
+            },
+          )
+          .then(() => {
+            return { publicAPI };
+          });
+      }
+
       const bob = positive => { return {
         receivePayment: async (wrapperPayment) => {
           const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
