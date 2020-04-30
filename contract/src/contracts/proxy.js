@@ -20,7 +20,7 @@ export const makeContract = harden(zcf => {
   let nonce = 0;
 
   const { issuer: issuer0, mint: mint0, amountMath: amountMath0 } = produceIssuer(
-    'Wrapper',
+    'Future',
     'set',
   );
   const wrapperToken0 = amountMath0.make;
@@ -80,8 +80,8 @@ export const makeContract = harden(zcf => {
           .getZoeService()
           .offer(
             contractSelfInvite,
-            harden({ give: { Wrapper: wrapperAmount } }), // TODO: Describe the payment here.
-            harden({ Wrapper: wrapperPayment }),
+            harden({ give: { Future: wrapperAmount } }), // TODO: Describe the payment here.
+            harden({ Future: wrapperPayment }),
           ).then(async () => {
             // Don't forget to call this, otherwise the other side won't be able to get the money:
             //lock.setOffer(tempContractHandle);
