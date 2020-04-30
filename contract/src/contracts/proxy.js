@@ -22,7 +22,7 @@ export const makeContract = harden(zcf => {
   const wrapperToken = amountMath.make;
 
   let payments = new Map(); // from receiver to payment
-  let nonces = new Map(); // from receiver to nonce // TODO: Don't use a separate map.
+  let nonces = new Map(); // from nonce to receiver // TODO: Don't use a separate map.
 
   let nonce = 0;
 
@@ -38,7 +38,7 @@ export const makeContract = harden(zcf => {
       }
 
       const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
-      nonces.set(receiver, ++nonce);
+      nonces.set(++nonce, receiver);
       payments.set(receiver, lock);
 
       function afterDynamicallyAddingNewIssuer() {
