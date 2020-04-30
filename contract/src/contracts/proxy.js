@@ -21,7 +21,8 @@ export const makeContract = harden(zcf => {
   );
   const wrapperToken = amountMath.make;
 
-  //let payments = new Map(); // from handle ({}) to payment
+  let payments = new Map(); // from receiver to payment
+  let nonces = new Map(); // from receiver to nonce // TODO: Don't use a separate map.
 
   let nonce = 0;
 
@@ -36,9 +37,13 @@ export const makeContract = harden(zcf => {
       const adminHook = userOfferHandle => {
       }
 
-      return zcf.addNewIssuer(issuer, 'Wrapper' + ++nonce).then(() => {
+      const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
+      nonces.set(receiver, ++nonce);
+      payments.set(receiver, lock);
+
+      function afterDynamicallyAddingNewIssuer() {
         const { inviteAnOffer } = makeZoeHelpers(zcf);   
-      
+
         const makeSendInvite = (receiver, paymentIssuer, payment, date) => () =>
           inviteAnOffer(
             harden({
@@ -47,17 +52,10 @@ export const makeContract = harden(zcf => {
             }),
           );
 
-        const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
-
-        const wrapperAmount = wrapperToken(harden([harden(lock)]));
-        const wrapperPayment = mint.mintPayment(wrapperAmount);
+        const wrapperAmount = wrapperToken(harden([nonce]));
+        //const wrapperPayment = mint.mintPayment(wrapperAmount);
     
-        zcf.reallocate(
-          [userOfferHandle],
-          [zcf.getCurrentAllocation(userOfferHandle)],
-          );
-        zcf.complete([userOfferHandle]);
-        await receiver.receivePayment(wrapperPayment); // wait until it is received
+        // await receiver.receivePayment(wrapperPayment); // wait until it is received
       
         return harden({
           invite: zcf.makeInvitation(adminHook),
@@ -68,7 +66,31 @@ export const makeContract = harden(zcf => {
             issuer: issuer,
           },
         });
-      });
+      }
+
+      return zcf.addNewIssuer(issuer, 'Wrapper' + nonce).then(afterDynamicallyAddingNewIssuer);
     }
-  }
+
+    return zcf
+      .getZoeService()
+      .offer(
+        contractSelfInvite,
+        harden({ give: { Wrapper: senderWrapperAmount } }),
+        harden({ Wrapper: senderWrapperPayment }),
+      ).then(async () => {
+        // Don't forget to call this, otherwise the other side won't be able to get the money:
+        //lock.setOffer(tempContractHandle);
+
+        receiver.receivePayment(receiverWrapperPayment)
+        zcf.reallocate(
+          [tempContractHandle, userOfferHandle],
+          [
+            zcf.getCurrentAllocation(userOfferHandle),
+            zcf.getCurrentAllocation(tempContractHandle),
+          ],
+        );
+        zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
+        return `Pledge accepted.`;
+      });
+  });
 });
