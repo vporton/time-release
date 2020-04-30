@@ -25,43 +25,50 @@ export const makeContract = harden(zcf => {
 
   let nonce = 0;
 
+  const { issuer0, mint0, amountMath0 } = produceIssuer(
+    'Wrapper',
+    'set',
+  );
+  const wrapperToken0 = amountMath0.make;
   return zcf.addNewIssuer(issuer, 'Wrapper').then(() => {
-    const adminHook = userOfferHandle => {
-    }
-
     // the contract creates an offer {give: wrapper, want: nothing} with the time release wrapper
     const sendHook = (receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
-      const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
+      const adminHook = userOfferHandle => {
+      }
 
-      const wrapperAmount = wrapperToken(harden([[harden(lock), ++nonce]]));
-      const wrapperPayment = mint.mintPayment(wrapperAmount);
+      return zcf.addNewIssuer(issuer, 'Wrapper' + ++nonce).then(() => {
+        const { inviteAnOffer } = makeZoeHelpers(zcf);   
+      
+        const makeSendInvite = (receiver, paymentIssuer, payment, date) => () =>
+          inviteAnOffer(
+            harden({
+              offerHook: sendHook(receiver, paymentIssuer, payment, date),
+              customProperties: { inviteDesc: 'offer' },
+            }),
+          );
 
-      zcf.reallocate(
-        [userOfferHandle],
-        [zcf.getCurrentAllocation(userOfferHandle)],
-        );
-      zcf.complete([userOfferHandle]);
-      return await receiver.receivePayment(wrapperPayment); // wait until it is received
-    }
+        const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
 
-    const { inviteAnOffer } = makeZoeHelpers(zcf);   
+        const wrapperAmount = wrapperToken(harden([harden(lock)]));
+        const wrapperPayment = mint.mintPayment(wrapperAmount);
     
-    const makeSendInvite = (receiver, paymentIssuer, payment, date) => () =>
-      inviteAnOffer(
-        harden({
-          offerHook: sendHook(receiver, paymentIssuer, payment, date),
-          customProperties: { inviteDesc: 'offer' },
-        }),
-      );
-
-    return harden({
-      invite: zcf.makeInvitation(adminHook),
-      publicAPI: {
-        makeSendInvite,
-        // makeReceiveInvite,
-        //currency: wrapperToken,
-        issuer: issuer,
-      },
-    });
-  });
+        zcf.reallocate(
+          [userOfferHandle],
+          [zcf.getCurrentAllocation(userOfferHandle)],
+          );
+        zcf.complete([userOfferHandle]);
+        await receiver.receivePayment(wrapperPayment); // wait until it is received
+      
+        return harden({
+          invite: zcf.makeInvitation(adminHook),
+          publicAPI: {
+            makeSendInvite,
+            // makeReceiveInvite,
+            //currency: wrapperToken,
+            issuer: issuer,
+          },
+        });
+      });
+    }
+  }
 });
