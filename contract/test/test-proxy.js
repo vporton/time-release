@@ -23,126 +23,126 @@ test(`Time release contract`, async t => {
       return zoe
         .makeInstance(installationHandle, {}, { timerService })
         .then(myInvite => {
-          return inviteIssuer
-            .getAmountOf(myInvite)
-            .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
-              const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
+          // return inviteIssuer
+          //   .getAmountOf(myInvite)
+          //   .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
+          //     const { publicAPI } = zoe.getInstanceRecord(auditoriumHandle);
 
-              return (
-                zoe
-                  .offer(myInvite, harden({}))
-                  // cancel will be renamed complete: https://github.com/Agoric/agoric-sdk/issues/835
-                  // cancelObj exists because of a current limitation in @agoric/marshal : https://github.com/Agoric/agoric-sdk/issues/818
-                  .then(
-                    async ({
-                      // outcome: outcomeP,
-                      payout,
-                      // cancelObj: { cancel: complete },
-                      // offerHandle,
-                    }) => {
-                      // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+          //     return (
+          //       zoe
+          //         .offer(myInvite, harden({}))
+          //         // cancel will be renamed complete: https://github.com/Agoric/agoric-sdk/issues/835
+          //         // cancelObj exists because of a current limitation in @agoric/marshal : https://github.com/Agoric/agoric-sdk/issues/818
+          //         .then(
+          //           async ({
+          //             // outcome: outcomeP,
+          //             payout,
+          //             // cancelObj: { cancel: complete },
+          //             // offerHandle,
+          //           }) => {
+          //             // const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
 
-                      return {
-                        publicAPI,
-                        // operaPayout: payout,
-                        // complete,
-                      };
-                    },
-                  )
-              );
-            });
+          //             return {
+          //               publicAPI,
+          //               // operaPayout: payout,
+          //               // complete,
+          //             };
+          //           },
+          //         )
+          //     );
+          //   });
         });
     },
   )
 
   contractReadyP.then(({ publicAPI }) => {
-    const currencyIssuer = produceIssuer('BaytownBucks')
-    const { mint: baytownBucksMint, issuer } = currencyIssuer;
-    const baytownBucks = issuer.getAmountMath().make;
+    // const currencyIssuer = produceIssuer('BaytownBucks')
+    // const { mint: baytownBucksMint, issuer } = currencyIssuer;
+    // const baytownBucks = issuer.getAmountMath().make;
 
-    const amount = baytownBucks(1000);
-    const payment = baytownBucksMint.mintPayment(amount);
+    // const amount = baytownBucks(1000);
+    // const payment = baytownBucksMint.mintPayment(amount);
 
     async function pushPullMoney(date, positive) {
-      const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
+    //   const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
 
-      const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(
-        harden(nonce), harden(wrapperIssuer), harden(receiver), harden(issuer), harden(payment), harden(date))());
+    //   const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(
+    //     harden(nonce), harden(wrapperIssuer), harden(receiver), harden(issuer), harden(payment), harden(date))());
 
-      const alice = () => {
-        return zoe
-          .offer(sendInvite, harden(aliceProposal), {})
-          .then(
-            async ({
-              // outcome: outcomeP,
-              payout,
-              // cancelObj: { cancel: complete },
-              // offerHandle,
-            }) => {
-              const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
-              console.log(amount);
+    //   const alice = () => {
+    //     return zoe
+    //       .offer(sendInvite, harden(aliceProposal), {})
+    //       .then(
+    //         async ({
+    //           // outcome: outcomeP,
+    //           payout,
+    //           // cancelObj: { cancel: complete },
+    //           // offerHandle,
+    //         }) => {
+    //           const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+    //           console.log(amount);
 
-              return {
-                publicAPI,
-              };
-            },
-          )
-          .then(() => {
-            return { publicAPI };
-          });
-      }
+    //           return {
+    //             publicAPI,
+    //           };
+    //         },
+    //       )
+    //       .then(() => {
+    //         return { publicAPI };
+    //       });
+    //   }
 
-      const bob = positive => { return {
-        receivePayment: async (wrapperPayment) => {
-          const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
-          // const timeRelease = amount.extent[0][0];
+    //   const bob = positive => { return {
+    //     receivePayment: async (wrapperPayment) => {
+    //       const amount = await E(publicAPI.issuer).getAmountOf(wrapperPayment);
+    //       // const timeRelease = amount.extent[0][0];
 
-          // const expectedAmount = await timeRelease.getAmount();
-          // t.equal(expectedAmount.extent, 1000, `correct expected payment amount`);
-          // t.equal(timeRelease.getIssuer().getBrand().getAllegedName(), 'BaytownBucks', 'payment was in BaytownBucks');
+    //       // const expectedAmount = await timeRelease.getAmount();
+    //       // t.equal(expectedAmount.extent, 1000, `correct expected payment amount`);
+    //       // t.equal(timeRelease.getIssuer().getBrand().getAllegedName(), 'BaytownBucks', 'payment was in BaytownBucks');
 
-          // const realPayment = await timeRelease.getPayment();
-          // if(!positive) {
-          //   t.equal(realPayment, null, `There is no payment yet.`);
-          // } else {
-          //   t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`);
-          //   // Now the payment can be deposited.
-          // }
+    //       // const realPayment = await timeRelease.getPayment();
+    //       // if(!positive) {
+    //       //   t.equal(realPayment, null, `There is no payment yet.`);
+    //       // } else {
+    //       //   t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`);
+    //       //   // Now the payment can be deposited.
+    //       // }
 
-          return {
-            publicAPI,
-          };
-        }
-      }};
+    //       return {
+    //         publicAPI,
+    //       };
+    //     }
+    //   }};
 
-      const aliceProposal = { give: amount };
-      return zoe
-        .offer(sendInvite, harden(aliceProposal), {})
-        .then(
-          async ({
-            // outcome: outcomeP,
-            payout,
-            // cancelObj: { cancel: complete },
-            // offerHandle,
-          }) => {
-            const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
-            console.log(amount);
+    //   const aliceProposal = { give: amount };
+    //   return zoe
+    //     .offer(sendInvite, harden(aliceProposal), {})
+    //     .then(
+    //       async ({
+    //         // outcome: outcomeP,
+    //         payout,
+    //         // cancelObj: { cancel: complete },
+    //         // offerHandle,
+    //       }) => {
+    //         const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+    //         console.log(amount);
 
-            return {
-              publicAPI,
-            };
-          },
-        )
-        .then(() => {
-          return { publicAPI };
-        });
+    //         return {
+    //           publicAPI,
+    //         };
+    //       },
+    //     )
+    //     .then(() => {
+    //       return { publicAPI };
+    //     });
     }
 
-    return pushPullMoney(1, false)
-      .then(async (x) => {
-        await E(timerService).tick("Going to the future");
-        return pushPullMoney(1, true);
-      });
+    // return pushPullMoney(1, false)
+    //   .then(async (x) => {
+    //     await E(timerService).tick("Going to the future");
+    //     return pushPullMoney(1, true);
+    //   });
   })
   .catch(err => {
     console.error('Error in last Time Release part', err);

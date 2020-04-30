@@ -95,28 +95,26 @@ export const makeContract = harden(zcf => {
       });
     });
 
-    const { inviteAnOffer } = makeZoeHelpers(zcf);   
-
-    const adminHook = userOfferHandle => {
-    }
-
-    const makeSendInvite = (nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date) => () =>
-      inviteAnOffer(
-        harden({
-          offerHook: sendHook(nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date),
-          customProperties: { inviteDesc: 'offer' },
-        }),
-      );
-
-    return harden({
-      invite: zcf.makeInvitation(adminHook),
-      publicAPI: {
-        createToken,
-        makeSendInvite,
-        // makeReceiveInvite,
-        //currency: wrapperToken,
-        issuer: issuer,
-      },
-    });
   };
+
+  const { inviteAnOffer } = makeZoeHelpers(zcf);   
+
+  const adminHook = userOfferHandle => {
+  }
+
+  const makeSendInvite = (nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date) => () =>
+    inviteAnOffer(
+      harden({
+        offerHook: sendHook(nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date),
+        customProperties: { inviteDesc: 'offer' },
+      }),
+    );
+
+  return harden({
+    invite: zcf.makeInvitation(adminHook),
+    publicAPI: {
+      createToken,
+      makeSendInvite,
+    },
+  });
 });
