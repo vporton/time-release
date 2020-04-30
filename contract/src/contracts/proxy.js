@@ -14,13 +14,6 @@ import { cleanProposal } from '@agoric/zoe/src/cleanProposal';
 export const makeContract = harden(zcf => {
   const { terms: { timerService } = {} } = zcf.getInstanceRecord();
 
-  // Create the internal token mint
-  const { issuer, mint, amountMath } = produceIssuer(
-    'Wrapper',
-    'set',
-  );
-  const wrapperToken = amountMath.make;
-
   let payments = new Map(); // from receiver to payment
   let nonces = new Map(); // from nonce to receiver // TODO: Don't use a separate map.
 
@@ -34,12 +27,20 @@ export const makeContract = harden(zcf => {
 
   const createToken = (issuer) => {
     nonces.set(++nonce, receiver);
+
+    // Create the token mint
+    const { issuer, mint, amountMath } = produceIssuer(
+      'Wrapper' + nonce,
+      'set',
+    );
+    // const wrapperToken = amountMath.make;
+
     await zcf.addNewIssuer(issuer, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/;
-    return nonce;
+    return { nonce, issuer };
   };
 
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
-  const sendHook = (receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
+  const sendHook = (nonce, receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
     const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
     payments.set(receiver, lock);
 
@@ -114,6 +115,4 @@ export const makeContract = harden(zcf => {
         issuer: issuer,
       },
     });
-}
-
 });
