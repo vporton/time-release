@@ -79,7 +79,7 @@ export const makeContract = harden(zcf => {
         harden({ Wrapper: lockedPayment }),
       ).then(async () => {
         // Don't forget to call this, otherwise the other side won't be able to get the money:
-        //lock.setOffer(tempContractHandle);
+        //lock.setOffer(tempContractHandle); // FIXME: Remove
 
         receiver.receivePayment(receiverWrapperPayment)
         zcf.reallocate(
