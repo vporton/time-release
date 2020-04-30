@@ -90,7 +90,7 @@ test(`Time release contract`, async t => {
       }};
 
       const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(
-        harden(nonce), harden(wrapperIssuer), harden(bob), harden(issuer), harden(payment), harden(date))());
+        harden(nonce), harden(bob), harden(issuer), harden(payment), harden(date))());
 
       const alice = () => {
         return zoe
@@ -115,27 +115,27 @@ test(`Time release contract`, async t => {
           });
       }
 
-    //   const aliceProposal = { give: amount };
-    //   return zoe
-    //     .offer(sendInvite, harden(aliceProposal), {})
-    //     .then(
-    //       async ({
-    //         // outcome: outcomeP,
-    //         payout,
-    //         // cancelObj: { cancel: complete },
-    //         // offerHandle,
-    //       }) => {
-    //         const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
-    //         console.log(amount);
+      const aliceProposal = { give: amount };
+      return zoe
+        .offer(sendInvite, harden(aliceProposal), {})
+        .then(
+          async ({
+            // outcome: outcomeP,
+            payout,
+            // cancelObj: { cancel: complete },
+            // offerHandle,
+          }) => {
+            const amount = await E(publicAPI.issuer).getAmountOf((await payout).Wrapper); // necessary to wait for payout
+            console.log(amount);
 
-    //         return {
-    //           publicAPI,
-    //         };
-    //       },
-    //     )
-    //     .then(() => {
-    //       return { publicAPI };
-    //     });
+            return {
+              publicAPI,
+            };
+          },
+        )
+        .then(() => {
+          return { publicAPI };
+        });
     }
 
     return pushPullMoney(1, false)

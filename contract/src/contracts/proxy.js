@@ -19,16 +19,16 @@ export const makeContract = harden(zcf => {
 
   let nonce = 0;
 
-  // const { /*issuer0, mint0, amountMath0*/ } = produceIssuer(
-  //   'Wrapper',
-  //   'set',
-  // );
-  // const wrapperToken0 = amountMath0.make;
+  const { issuer: issuer0, mint: mint0, amountMath: amountMath0 } = produceIssuer(
+    'Wrapper',
+    'set',
+  );
+  const wrapperToken0 = amountMath0.make;
 
   const createToken = (issuer0) => {
     // Create the token mint
     const { issuer: wrapperIssuer } = produceIssuer(
-      'Wrapper' + nonce,
+      'Wrapper' + ++nonce,
       'set',
     );
 
@@ -39,25 +39,29 @@ export const makeContract = harden(zcf => {
   };
 
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
-  const sendHook = (nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
-    nonces.set(++nonce, receiver);
+  const sendHook = (nonce, receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
+    nonces.set(nonce, receiver);
 
-    const wrapperAmountMath = wrapperIssuer.getAmountMath();
-    const wrapperToken = wrapperAmountMath.make;
+    // const wrapperAmountMath = wrapperIssuer.getAmountMath();
+    // const wrapperToken = wrapperAmountMath.make;
 
     const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
     payments.set(receiver, lock);
 
     // await receiver.receivePayment(wrapperPayment); // wait until it is received
-    const wrapperAmount = wrapperToken(harden([nonce]));
-    const wrapperPayment = mint.mintPayment(wrapperAmount);
+    const wrapperAmount = wrapperToken0(harden([nonce]));
+    const wrapperPayment = mint0.mintPayment(wrapperAmount);
   
+    var want = {};
+    want['Wrapper' + nonce] = lockedAmount;
+    var paymentDesc = {};
+    paymentDesc['Wrapper' + nonce] = lockedPayment;
     await zcf
       .getZoeService()
       .offer(
         contractSelfInvite,
-        harden({ want: { Wrapper: lockedAmount } }),
-        harden({ Wrapper: lockedPayment }),
+        harden({ want: want }),
+        harden(paymentDesc),
       ).then(async () => {
         // Don't forget to call this, otherwise the other side won't be able to get the money:
         //lock.setOffer(tempContractHandle); // FIXME: Remove
@@ -102,10 +106,10 @@ export const makeContract = harden(zcf => {
   const adminHook = userOfferHandle => {
   }
 
-  const makeSendInvite = (nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date) => () =>
+  const makeSendInvite = (nonce, receiver, paymentIssuer, lockedPayment, date) => () =>
     inviteAnOffer(
       harden({
-        offerHook: sendHook(nonce, wrapperIssuer, receiver, paymentIssuer, lockedPayment, date),
+        offerHook: sendHook(nonce, receiver, paymentIssuer, lockedPayment, date),
         customProperties: { inviteDesc: 'offer' },
       }),
     );
