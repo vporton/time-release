@@ -69,7 +69,6 @@ test(`Time release contract`, async t => {
       const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(
         harden(nonce), harden(wrapperIssuer), harden(receiver), harden(issuer), harden(payment), harden(date))());
 
-      const aliceProposal = { give: amount };
       const alice = () => {
         return zoe
           .offer(sendInvite, harden(aliceProposal), {})
@@ -116,7 +115,7 @@ test(`Time release contract`, async t => {
         }
       }};
 
-      const aliceProposal = {};
+      const aliceProposal = { give: amount };
       return zoe
         .offer(sendInvite, harden(aliceProposal), {})
         .then(
