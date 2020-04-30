@@ -33,7 +33,7 @@ export const makeContract = harden(zcf => {
     );
 
     zcf.addNewIssuer(issuer, 'Wrapper' + nonce)/*.then(afterDynamicallyAddingNewIssuer)*/
-      .then(() => { wrapperIssuer: issuer, nonce });
+      .then(() => { issuer: wrapperIssuer, nonce });
   };
 
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
