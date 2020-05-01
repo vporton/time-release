@@ -87,7 +87,7 @@ export const makeContract = harden(zcf => {
 
         // const unique = {};
         
-        // a self-referntial structure
+        // a self-referential structure
         let record = {
           // offerHook: receiveHook(record),
           customProperties: { inviteDesc: 'offer' },
