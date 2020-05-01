@@ -38,9 +38,16 @@ export const makeContract = harden(zcf => {
       });
   };
 
+  let tempContractHandle;
+  const contractSelfInvite = zcf.makeInvitation(
+    offerHandle => (tempContractHandle = offerHandle),
+  );
+
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
   const sendHook = (nonce, receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
-    nonces.set(nonce, receiver);
+    //nonces.set(nonce, receiver);
+
+    const lockedAmount = zcf.getCurrentAllocation(userOfferHandle); // paymentIssuer.getAmountOf(lockedPayment);
 
     // const wrapperAmountMath = wrapperIssuer.getAmountMath();
     // const wrapperToken = wrapperAmountMath.make;
@@ -53,7 +60,7 @@ export const makeContract = harden(zcf => {
     const wrapperPayment = mint0.mintPayment(wrapperAmount);
   
     var want = {};
-    want['Wrapper' + nonce] = lockedAmount;
+    want['Wrapper' + nonce] = zfc.getCurrentAllocation(userOfferHandle, );
     var paymentDesc = {};
     paymentDesc['Wrapper' + nonce] = lockedPayment;
     await zcf
