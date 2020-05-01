@@ -38,30 +38,6 @@ test.only('zoe - time release', async t => {
         });    
 
     async function pushPullMoney(date, positive) {
-        // const bob = {
-        //   receivePayment: async (futurePayment) => {
-        //     // console.log(amount)
-        //     // const amount = await E(publicAPI.futureIssuer).getAmountOf(futurePayment); // FIXME: uncomment
-        //     // const timeRelease = amount.extent[0][0];
-
-        //     // const expectedAmount = await timeRelease.getAmount();
-        //     // t.equal(expectedAmount.extent, 1000, `correct expected payment amount`);
-        //     // t.equal(timeRelease.getIssuer().getBrand().getAllegedName(), 'BaytownBucks', 'payment was in BaytownBucks');
-
-        //     // const realPayment = await timeRelease.getPayment();
-        //     // if(!positive) {
-        //     //   t.equal(realPayment, null, `There is no payment yet.`);
-        //     // } else {
-        //     //   t.equal((await issuer.getAmountOf(realPayment)).extent, 1000, `correct payment amount`);
-        //     //   // Now the payment can be deposited.
-        //     // }
-
-        //     return {
-        //       publicAPI,
-        //     };
-        //   }
-        // };
-
         const addAssetsInvite = inviteIssuer.claim(publicAPI.makeAddAssetsInvite(harden(date))());
 
         // Alice adds assets
@@ -89,8 +65,11 @@ test.only('zoe - time release', async t => {
 
         const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
 
-        // Bob got 1000 tokens
-        t.deepEquals(tokenPayoutAmount, tokens1000);
+        if(!positive) {
+          t.equal(tokenPayoutAmount, null, `There is no payment yet.`);
+        } else {
+          t.equal(tokenPayoutAmount, 1000, `correct payment amount`);
+        }
       }
 
       return pushPullMoney(1, false)
