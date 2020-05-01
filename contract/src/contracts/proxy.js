@@ -204,6 +204,8 @@ export const makeContract = harden(zcf => {
     );
   };
 
+  const { inviteAnOffer } = makeZoeHelpers(zcf);
+
   const adminInvite = () =>
     zcf.makeInvitation(
       makeClaimAssetsInvite,

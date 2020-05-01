@@ -26,7 +26,7 @@ test.only('zoe - time release', async t => {
     // awkward code
     let publicAPI;
     // Alice creates a contract instance
-    return zoe
+    await zoe
       .makeInstance(installationHandle, { Token: issuer }, { timerService })
       .then(myInvite => {
         return inviteIssuer
