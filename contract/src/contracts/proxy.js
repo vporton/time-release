@@ -45,8 +45,8 @@ export const makeContract = harden(zcf => {
     // const wrapperAmountMath = wrapperIssuer.getAmountMath();
     // const wrapperToken = wrapperAmountMath.make;
 
-    const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
-    payments.set(receiver, lock);
+    // const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
+    // payments.set(receiver, lock);
 
     // await receiver.receivePayment(wrapperPayment); // wait until it is received
     const wrapperAmount = wrapperToken0(harden([nonce]));
@@ -76,6 +76,24 @@ export const makeContract = harden(zcf => {
         );
         zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
 
+        var give = {};
+        give['Wrapper' + nonce] = lockedAmount;
+
+        const inviteToken =
+          inviteAnOffer(
+            harden({
+              offerHook: receiveHook,
+              customProperties: { inviteDesc: 'offer' },
+              extent: {
+                amount: lockedAmount,
+                date: date,
+              },
+              expected: {
+                give: give,
+              },
+            }),
+          );
+    
         return zcf
           .getZoeService()
           .offer(
