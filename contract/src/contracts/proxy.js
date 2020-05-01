@@ -15,7 +15,6 @@ export const makeContract = harden(zcf => {
   const { terms: { timerService } = {} } = zcf.getInstanceRecord();
 
   let nonce = 0;
-  let dates = Map(); // nonce -> date
 
   const { issuer: issuer0, mint: mint0, amountMath: amountMath0 } = produceIssuer(
     'Future',
@@ -73,7 +72,7 @@ export const makeContract = harden(zcf => {
     // const wrapperPayment = mint0.mintPayment(wrapperAmount);
   
     var give = {}; // TODO
-    give/*['Wrapper' + nonce]*/ = zfc.getCurrentAllocation(userOfferHandle, [ 'Wrapper' + nonce ]);
+    give/*['Wrapper' + nonce]*/ = zcf.getCurrentAllocation(userOfferHandle, [ 'Wrapper' + nonce ]);
     // var paymentDesc = {};
     // paymentDesc['Wrapper' + nonce] = lockedPayment;
     await zcf
@@ -88,21 +87,25 @@ export const makeContract = harden(zcf => {
 
         // const unique = {};
         
+        // a self-referntial structure
+        let record = {
+          // offerHook: receiveHook(record),
+          customProperties: { inviteDesc: 'offer' },
+          // unique: unique,
+          extent: {
+            nonce: nonce,
+            amount: lockedAmount,
+            date: date,
+          },
+          expected: {
+            give: give,
+          },
+        };
+        record.offerHook = receiveHook(record);
+
         const inviteToken =
           inviteAnOffer(
-            harden({
-              offerHook: receiveHook(inviteToken),
-              customProperties: { inviteDesc: 'offer' },
-              // unique: unique,
-              extent: {
-                nonce: nonce,
-                amount: lockedAmount,
-                date: date,
-              },
-              expected: {
-                give: give,
-              },
-            }),
+            harden(record),
           );
 
         await receiver.receivePayment(inviteToken);
