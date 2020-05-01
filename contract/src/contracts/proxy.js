@@ -107,6 +107,7 @@ export const makeContract = harden(zcf => {
           inviteAnOffer(
             harden(record),
           );
+        console.log(inviteToken)
 
         await receiver.receivePayment(inviteToken);
           

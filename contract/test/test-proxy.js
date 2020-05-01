@@ -66,8 +66,12 @@ test(`Time release contract`, async t => {
     async function pushPullMoney(date, positive) {
       const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
 
+      let future = null;
+
       const bob = {
         receivePayment: async (futurePayment) => {
+          future = futurePayment;
+          // console.log(amount)
           // const amount = await E(publicAPI.futureIssuer).getAmountOf(futurePayment); // FIXME: uncomment
           // const timeRelease = amount.extent[0][0];
 
@@ -121,8 +125,6 @@ test(`Time release contract`, async t => {
       paymentDesc['Wrapper' + nonce] = payment;
       const aliceProposal = { give: give };
 
-      console.log(aliceProposal);
-      console.log(paymentDesc);
       // console.log(payment.getAllegedBrand().getAllegedName());
 
       // FIXME: This operator prints "payment not found for BaytownBucks"
