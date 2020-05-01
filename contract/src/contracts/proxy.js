@@ -225,5 +225,5 @@ export const makeContract = harden(zcf => {
     publicAPI: {
       makeAddAssetsInvite,
     }
-});
+  });
 });
