@@ -55,19 +55,28 @@ test.only('zoe - time release', async t => {
           { Token: bucksPayment },
         );
 
-        // Bob tries to get the funds. Right now he can get them
-        // immediately because we didn't set up the timer
-        const { payout: payoutP } = await E(zoe).offer(bobInvite);
-
-        // Bob's payout promise resolves
-        const bobPayout = await payoutP;
-        const bobTokenPayout = await bobPayout.Token;
-
-        const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
-
         if(!positive) {
-          t.equal(tokenPayoutAmount, null, `There is no payment yet.`);
+          t.rejects(async () => {
+            const { payout: payoutP } = await E(zoe).offer(bobInvite);
+
+            // Bob's payout promise resolves
+            const bobPayout = await payoutP;
+            const bobTokenPayout = await bobPayout.Token;
+  
+            const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
+            },
+            `The time has not yet come.`,
+            `time has not yet come`);
         } else {
+          // Bob tries to get the funds.
+          const { payout: payoutP } = await E(zoe).offer(bobInvite);
+
+          // Bob's payout promise resolves
+          const bobPayout = await payoutP;
+          const bobTokenPayout = await bobPayout.Token;
+
+          const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
+
           t.equal(tokenPayoutAmount, 1000, `correct payment amount`);
         }
       }
