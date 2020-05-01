@@ -37,8 +37,6 @@ test.only('zoe - time release', async t => {
           })
         });    
 
-    console.log(publicAPI)
-
     async function pushPullMoney(date, positive) {
         // const bob = {
         //   receivePayment: async (futurePayment) => {
