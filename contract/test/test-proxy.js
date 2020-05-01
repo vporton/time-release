@@ -66,7 +66,7 @@ test(`Time release contract`, async t => {
     async function pushPullMoney(date, positive) {
       const { issuer: wrapperIssuer, nonce } = await publicAPI.createToken(issuer);
 
-      const bob = positive => { return {
+      const bob = {
         receivePayment: async (futurePayment) => {
           // const amount = await E(publicAPI.futureIssuer).getAmountOf(futurePayment); // FIXME: uncomment
           // const timeRelease = amount.extent[0][0];
@@ -87,10 +87,10 @@ test(`Time release contract`, async t => {
             publicAPI,
           };
         }
-      }};
+      };
 
       const sendInvite = inviteIssuer.claim(publicAPI.makeSendInvite(
-        harden(nonce), harden(bob), harden(issuer), harden(payment), harden(date))());
+        harden(nonce), harden(bob), harden(date))());
 
       const alice = () => {
         return zoe
