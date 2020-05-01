@@ -189,11 +189,13 @@ export const makeContract = harden(zcf => {
 
   const { terms: { timerService }} = zcf.getInstanceRecord();
 
+  const { inviteAnOffer, rejectOffer } = makeZoeHelpers(zcf);
+
   const makeClaimAssetsInvite = date => addAssetsOfferHandle => {
     const claimAssetsOfferHook = async claimAssetsOfferHandle => {
       console.log(await E(timerService).getCurrentTimestamp(), ">=", date);
       if(await E(timerService).getCurrentTimestamp() < date) {
-        zcf.rejectOffer(claimAssetsOfferHandle);
+        rejectOffer(claimAssetsOfferHandle, `The time has not yet come.`);
         return;
       }
 
@@ -205,8 +207,6 @@ export const makeContract = harden(zcf => {
       harden({ inviteDesc: 'claimAssets' }),
     );
   };
-
-  const { inviteAnOffer } = makeZoeHelpers(zcf);
 
   const adminInvite = () =>
     zcf.makeInvitation(
