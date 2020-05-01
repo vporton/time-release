@@ -23,12 +23,19 @@ test.only('zoe - time release', async t => {
     const { source, moduleFormat } = await bundleSource(contractRoot);
     const installationHandle = await E(zoe).install(source, moduleFormat);
 
+    // awkwarrd code
+    let publicAPI;
     // Alice creates a contract instance
-    const adminInvite = await E(zoe).makeInstance(
-      installationHandle,
-      { Token: issuer },
-      { timerService },
-    );
+    return zoe
+      .makeInstance(installationHandle, {}, { timerService })
+      .then(myInvite => {
+        return inviteIssuer
+          .getAmountOf(myInvite)
+          .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
+            const { publicAPI: papi } = zoe.getInstanceRecord(auditoriumHandle);
+            publicAPI = papi;
+          })
+        });    
 
     async function pushPullMoney(date, positive) {
         // const bob = {
