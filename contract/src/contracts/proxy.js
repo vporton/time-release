@@ -204,8 +204,11 @@ export const makeContract = harden(zcf => {
     );
   };
 
-  const adminInvite = () => {
-  };
+  const adminInvite = () =>
+    zcf.makeInvitation(
+      makeClaimAssetsInvite,
+      harden({ inviteDesc: 'start' }),
+    );
 
   const makeAddAssetsInvite = (date) => {
     return inviteAnOffer({
