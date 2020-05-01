@@ -18,13 +18,10 @@ export const makeContract = harden(zcf => {
 
   const makeClaimAssetsInvite = date => addAssetsOfferHandle => {
     const claimAssetsOfferHook = async claimAssetsOfferHandle => {
-      console.log(await E(timerService).getCurrentTimestamp(), ">=", date);
-      if(await E(timerService).getCurrentTimestamp() < date) {
-        // We don't reject, saving it for the future.
-        return; // rejectOffer(claimAssetsOfferHandle, `The time has not yet come.`);
-      }
-
-      return swap(addAssetsOfferHandle, claimAssetsOfferHandle);
+      //console.log(await E(timerService).getCurrentTimestamp(), ">=", date);
+      return E(timerService).setWakeup(date, {
+        wake: () => swap(addAssetsOfferHandle, claimAssetsOfferHandle)
+      });
     };
 
     return inviteAnOffer({

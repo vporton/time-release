@@ -10,7 +10,7 @@ import buildManualTimer from '@agoric/zoe/tools/manualTimer'
 const contractRoot = `${__dirname}/../src/contracts/proxy.js`;
 
 test.only('zoe - time release', async t => {
-  t.plan(2);
+  t.plan(1);
   try {
     // Setup initial conditions
     const zoe = makeZoe({ require });
@@ -57,38 +57,23 @@ test.only('zoe - time release', async t => {
       const bobInvite = await bobInvitePromise; // FIXME: Correct?
       //console.log('bobInvite', await bobInvite)
 
-      console.log(positive)
-      if(!positive) {
-        t.rejects(async () => {
-          const { payout: payoutP } = await E(zoe).offer(bobInvite);
+      await E(timerService).tick("Going to the future");
 
-          // Bob's payout promise resolves
-          const bobPayout = await payoutP;
-          const bobTokenPayout = await bobPayout.Token;
+      // Bob tries to get the funds.
+      const { payout: payoutP } = await E(zoe).offer(bobInvite);
 
-          const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
-          },
-          `The time has not yet come.`,
-          `time has not yet come`);
-      } else {
-        // Bob tries to get the funds.
-        const { payout: payoutP } = await E(zoe).offer(bobInvite);
+      // Bob's payout promise resolves
+      const bobPayout = await payoutP;
+      const bobTokenPayout = await bobPayout.Token;
 
-        // Bob's payout promise resolves
-        const bobPayout = await payoutP;
-        const bobTokenPayout = await bobPayout.Token;
+      const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
 
-        const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
-
-        t.equal(tokenPayoutAmount.extent, 1000, `correct payment amount`);
-      }
+      t.equal(tokenPayoutAmount.extent, 1000, `correct payment amount`);
     }
 
     return pushPullMoney(1, false)
-      .then(async (x) => {
-        await E(timerService).tick("Going to the future");
-        return pushPullMoney(1, true);
-      });
+      // .then(async (bobInvite) => {
+      // });
   } catch (e) {
     t.assert(false, e);
     console.log(e);
