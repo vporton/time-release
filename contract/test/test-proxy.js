@@ -23,7 +23,7 @@ test.only('zoe - time release', async t => {
     const { source, moduleFormat } = await bundleSource(contractRoot);
     const installationHandle = await E(zoe).install(source, moduleFormat);
 
-    // awkwarrd code
+    // awkward code
     let publicAPI;
     // Alice creates a contract instance
     return zoe
