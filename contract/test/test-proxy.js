@@ -10,7 +10,7 @@ import buildManualTimer from '@agoric/zoe/tools/manualTimer'
 const contractRoot = `${__dirname}/../src/contracts/proxy.js`;
 
 test.only('zoe - time release', async t => {
-  t.plan(1);
+  t.plan(2);
   try {
     // Setup initial conditions
     const zoe = makeZoe({ require });
@@ -55,6 +55,7 @@ test.only('zoe - time release', async t => {
           { Token: bucksPayment },
         );
 
+        console.log(positive)
         if(!positive) {
           t.rejects(async () => {
             const { payout: payoutP } = await E(zoe).offer(bobInvite);
@@ -77,15 +78,15 @@ test.only('zoe - time release', async t => {
 
           const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
 
-          t.equal(tokenPayoutAmount, 1000, `correct payment amount`);
+          t.equal(tokenPayoutAmount.extent, 1000, `correct payment amount`);
         }
       }
 
       return pushPullMoney(1, false)
-      //   .then(async (x) => {
-      //     await E(timerService).tick("Going to the future");
-      //     return pushPullMoney(1, true);
-      //   });
+        .then(async (x) => {
+          await E(timerService).tick("Going to the future");
+          return pushPullMoney(1, true);
+        });
   } catch (e) {
     t.assert(false, e);
     console.log(e);

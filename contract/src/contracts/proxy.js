@@ -215,7 +215,6 @@ export const makeContract = harden(zcf => {
     );
 
   const makeAddAssetsInvite = () => (date) => {
-    console.log(date)
     return inviteAnOffer({
       offerHook: makeClaimAssetsInvite(date),
       customProperties: harden({ inviteDesc: 'addAssets' }),
