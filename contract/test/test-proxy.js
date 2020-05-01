@@ -31,8 +31,8 @@ test.only('zoe - time release', async t => {
       .then(myInvite => {
         return inviteIssuer
           .getAmountOf(myInvite)
-          .then(({ extent: [{ instanceHandle: auditoriumHandle }] }) => {
-            const { publicAPI: papi } = zoe.getInstanceRecord(auditoriumHandle);
+          .then(({ extent: [{ instanceHandle }] }) => {
+            const { publicAPI: papi } = zoe.getInstanceRecord(instanceHandle);
             publicAPI = papi;
           })
         });    
