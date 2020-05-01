@@ -90,7 +90,8 @@ test.only('zoe - time release', async t => {
         const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
 
         // Bob got 1000 tokens
-        t.deepEquals(tokenPayoutAmount, tokens1000);    }
+        t.deepEquals(tokenPayoutAmount, tokens1000);
+      }
 
       return pushPullMoney(1, false)
       //   .then(async (x) => {
