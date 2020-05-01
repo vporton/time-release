@@ -14,16 +14,14 @@ import { cleanProposal } from '@agoric/zoe/src/cleanProposal';
 export const makeContract = harden(zcf => {
   const { terms: { timerService } = {} } = zcf.getInstanceRecord();
 
-  let payments = new Map(); // from receiver to payment
-  let nonces = new Map(); // from nonce to receiver // TODO: Don't use a separate map.
-
   let nonce = 0;
+  let dates = Map(); // nonce -> date
 
   const { issuer: issuer0, mint: mint0, amountMath: amountMath0 } = produceIssuer(
     'Future',
     'set',
   );
-  const wrapperToken0 = amountMath0.make;
+  // const wrapperToken0 = amountMath0.make;
 
   const createToken = (issuer0) => {
     // Create the token mint
@@ -43,8 +41,9 @@ export const makeContract = harden(zcf => {
     offerHandle => (tempContractHandle = offerHandle),
   );
 
-  const receiveHook = async userOfferHandle => {
-    if(await E(_timerService).getCurrentTimestamp() < _lockedUntil) {
+  const receiveHook = async nonce => userOfferHandle => {
+    if(!nonces[] ||
+       await E(_timerService).getCurrentTimestamp() < nonces[nonce]) {
       zcf.rejectOffer(userOfferHandle);
       return;
     }
@@ -59,7 +58,7 @@ export const makeContract = harden(zcf => {
   };
 
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
-  const sendHook = (nonce, receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
+  const sendHook = (nonce, receiver, date) => async userOfferHandle => {
     //nonces.set(nonce, receiver);
 
     const lockedAmount = zcf.getCurrentAllocation(userOfferHandle); // paymentIssuer.getAmountOf(lockedPayment);
@@ -146,10 +145,10 @@ export const makeContract = harden(zcf => {
   const adminHook = userOfferHandle => {
   }
 
-  const makeSendInvite = (nonce, receiver, paymentIssuer, lockedPayment, date) => () =>
+  const makeSendInvite = (nonce, receiver, date) => () =>
     inviteAnOffer(
       harden({
-        offerHook: sendHook(nonce, receiver, paymentIssuer, lockedPayment, date),
+        offerHook: sendHook(nonce, receiver, date),
         customProperties: { inviteDesc: 'offer' },
       }),
     );
