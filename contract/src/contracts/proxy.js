@@ -43,6 +43,21 @@ export const makeContract = harden(zcf => {
     offerHandle => (tempContractHandle = offerHandle),
   );
 
+  const receiveHook = async userOfferHandle => {
+    if(await E(_timerService).getCurrentTimestamp() < _lockedUntil) {
+      zcf.rejectOffer(userOfferHandle);
+      return;
+    }
+    zcf.reallocate(
+      [tempContractHandle, userOfferHandle],
+      [
+        zcf.getCurrentAllocation(userOfferHandle),
+        zcf.getCurrentAllocation(tempContractHandle),
+      ],
+    );
+    zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
+  };
+
   // the contract creates an offer {give: [nonce], want: nothing} with the time release wrapper
   const sendHook = (nonce, receiver, paymentIssuer, lockedPayment, date) => async userOfferHandle => {
     //nonces.set(nonce, receiver);
@@ -55,12 +70,11 @@ export const makeContract = harden(zcf => {
     // const lock = makeTimeRelease(zcf, timerService, paymentIssuer, lockedPayment, date);
     // payments.set(receiver, lock);
 
-    // await receiver.receivePayment(wrapperPayment); // wait until it is received
-    const wrapperAmount = wrapperToken0(harden([nonce]));
-    const wrapperPayment = mint0.mintPayment(wrapperAmount);
+    // const wrapperAmount = wrapperToken0(harden([nonce]));
+    // const wrapperPayment = mint0.mintPayment(wrapperAmount);
   
-    // var want = {};
-    // want['Wrapper' + nonce] = zfc.getCurrentAllocation(userOfferHandle, );
+    var give = {}; // TODO
+    give/*['Wrapper' + nonce]*/ = zfc.getCurrentAllocation(userOfferHandle, [ 'Wrapper' + nonce ]);
     // var paymentDesc = {};
     // paymentDesc['Wrapper' + nonce] = lockedPayment;
     await zcf
