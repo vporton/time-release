@@ -41,9 +41,9 @@ export const makeContract = harden(zcf => {
     offerHandle => (tempContractHandle = offerHandle),
   );
 
-  const receiveHook = async nonce => userOfferHandle => {
-    if(!nonces[] ||
-       await E(_timerService).getCurrentTimestamp() < nonces[nonce]) {
+  const receiveHook = inviteToken => async userOfferHandle => {
+    const extent = inviteToken.extent;
+    if(await E(_timerService).getCurrentTimestamp() < extent.date) {
       zcf.rejectOffer(userOfferHandle);
       return;
     }
@@ -85,13 +85,17 @@ export const makeContract = harden(zcf => {
       ).then(async () => {
         // Don't forget to call this, otherwise the other side won't be able to get the money:
         //lock.setOffer(tempContractHandle); // FIXME: Remove
-  
+
+        // const unique = {};
+        
         const inviteToken =
           inviteAnOffer(
             harden({
-              offerHook: receiveHook,
+              offerHook: receiveHook(inviteToken),
               customProperties: { inviteDesc: 'offer' },
+              // unique: unique,
               extent: {
+                nonce: nonce,
                 amount: lockedAmount,
                 date: date,
               },
