@@ -38,7 +38,7 @@ test.only('zoe - time release', async t => {
         });    
 
     async function pushPullMoney(date, positive) {
-        const addAssetsInvite = inviteIssuer.claim(publicAPI.makeAddAssetsInvite(harden(date))());
+        const addAssetsInvite = inviteIssuer.claim(publicAPI.makeAddAssetsInvite()(harden(date)));
 
         // Alice adds assets
         const tokens1000 = amountMath.make(1000);

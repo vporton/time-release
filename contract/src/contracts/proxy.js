@@ -191,6 +191,7 @@ export const makeContract = harden(zcf => {
 
   const makeClaimAssetsInvite = date => addAssetsOfferHandle => {
     const claimAssetsOfferHook = async claimAssetsOfferHandle => {
+      console.log(await E(timerService).getCurrentTimestamp(), ">=", date);
       if(await E(timerService).getCurrentTimestamp() < date) {
         zcf.rejectOffer(claimAssetsOfferHandle);
         return;
@@ -209,11 +210,12 @@ export const makeContract = harden(zcf => {
 
   const adminInvite = () =>
     zcf.makeInvitation(
-      makeClaimAssetsInvite,
+      () => {},
       harden({ inviteDesc: 'start' }),
     );
 
   const makeAddAssetsInvite = () => (date) => {
+    console.log(date)
     return inviteAnOffer({
       offerHook: makeClaimAssetsInvite(date),
       customProperties: harden({ inviteDesc: 'addAssets' }),
