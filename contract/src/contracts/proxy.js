@@ -20,16 +20,17 @@ export const makeContract = harden(zcf => {
     const claimAssetsOfferHook = async claimAssetsOfferHandle => {
       console.log(await E(timerService).getCurrentTimestamp(), ">=", date);
       if(await E(timerService).getCurrentTimestamp() < date) {
-        return rejectOffer(claimAssetsOfferHandle, `The time has not yet come.`);
+        // We don't reject, saving it for the future.
+        return; // rejectOffer(claimAssetsOfferHandle, `The time has not yet come.`);
       }
 
       return swap(addAssetsOfferHandle, claimAssetsOfferHandle);
     };
 
-    return zcf.makeInvitation(
-      claimAssetsOfferHook,
-      harden({ inviteDesc: 'claimAssets' }),
-    );
+    return inviteAnOffer({
+      offerHook: claimAssetsOfferHook,
+      customProperties: harden({ inviteDesc: 'claimAssets' }),
+    });
   };
 
   const adminInvite = () =>

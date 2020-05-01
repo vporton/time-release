@@ -49,11 +49,13 @@ test.only('zoe - time release', async t => {
         // deadline that is after the expected timed release of the funds.
         exit: { waived: null },
       });
-      const { outcome: bobInvite } = await E(zoe).offer(
+      const { outcome: bobInvitePromise } = await E(zoe).offer(
         addAssetsInvite,
         aliceProposal,
         { Token: bucksPayment },
       );
+      const bobInvite = await bobInvitePromise; // FIXME: Correct?
+      //console.log('bobInvite', await bobInvite)
 
       console.log(positive)
       if(!positive) {
