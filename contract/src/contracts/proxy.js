@@ -177,6 +177,7 @@ import harden from '@agoric/harden';
 
 // Eventually will be importable from '@agoric/zoe-contract-support'
 import { makeZoeHelpers } from '@agoric/zoe/src/contractSupport';
+import { E } from '@agoric/eventual-send';
 
 // Alice escrows funds, and then Bob can get them as a payout, but
 // only after a certain time.
@@ -212,7 +213,7 @@ export const makeContract = harden(zcf => {
       harden({ inviteDesc: 'start' }),
     );
 
-  const makeAddAssetsInvite = (date) => {
+  const makeAddAssetsInvite = () => (date) => {
     return inviteAnOffer({
       offerHook: makeClaimAssetsInvite(date),
       customProperties: harden({ inviteDesc: 'addAssets' }),
