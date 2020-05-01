@@ -195,8 +195,7 @@ export const makeContract = harden(zcf => {
     const claimAssetsOfferHook = async claimAssetsOfferHandle => {
       console.log(await E(timerService).getCurrentTimestamp(), ">=", date);
       if(await E(timerService).getCurrentTimestamp() < date) {
-        rejectOffer(claimAssetsOfferHandle, `The time has not yet come.`);
-        return;
+        return rejectOffer(claimAssetsOfferHandle, `The time has not yet come.`);
       }
 
       return swap(addAssetsOfferHandle, claimAssetsOfferHandle);
