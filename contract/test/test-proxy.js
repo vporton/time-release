@@ -38,38 +38,26 @@ test.only('zoe - time release', async t => {
         });    
 
     async function pushPullMoney(date, positive) {
-        const addAssetsInvite = inviteIssuer.claim(publicAPI.makeAddAssetsInvite()(harden(date)));
+      const addAssetsInvite = inviteIssuer.claim(publicAPI.makeAddAssetsInvite()(harden(date)));
 
-        // Alice adds assets
-        const tokens1000 = amountMath.make(1000);
-        const bucksPayment = mint.mintPayment(tokens1000);
-        const aliceProposal = harden({
-          give: { Token: tokens1000 },
-          // she will not be able to exit on her own. We could also have a
-          // deadline that is after the expected timed release of the funds.
-          exit: { waived: null },
-        });
-        const { outcome: bobInvite } = await E(zoe).offer(
-          addAssetsInvite,
-          aliceProposal,
-          { Token: bucksPayment },
-        );
+      // Alice adds assets
+      const tokens1000 = amountMath.make(1000);
+      const bucksPayment = mint.mintPayment(tokens1000);
+      const aliceProposal = harden({
+        give: { Token: tokens1000 },
+        // she will not be able to exit on her own. We could also have a
+        // deadline that is after the expected timed release of the funds.
+        exit: { waived: null },
+      });
+      const { outcome: bobInvite } = await E(zoe).offer(
+        addAssetsInvite,
+        aliceProposal,
+        { Token: bucksPayment },
+      );
 
-        console.log(positive)
-        if(!positive) {
-          t.rejects(async () => {
-            const { payout: payoutP } = await E(zoe).offer(bobInvite);
-
-            // Bob's payout promise resolves
-            const bobPayout = await payoutP;
-            const bobTokenPayout = await bobPayout.Token;
-  
-            const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
-            },
-            `The time has not yet come.`,
-            `time has not yet come`);
-        } else {
-          // Bob tries to get the funds.
+      console.log(positive)
+      if(!positive) {
+        t.rejects(async () => {
           const { payout: payoutP } = await E(zoe).offer(bobInvite);
 
           // Bob's payout promise resolves
@@ -77,16 +65,28 @@ test.only('zoe - time release', async t => {
           const bobTokenPayout = await bobPayout.Token;
 
           const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
+          },
+          `The time has not yet come.`,
+          `time has not yet come`);
+      } else {
+        // Bob tries to get the funds.
+        const { payout: payoutP } = await E(zoe).offer(bobInvite);
 
-          t.equal(tokenPayoutAmount.extent, 1000, `correct payment amount`);
-        }
+        // Bob's payout promise resolves
+        const bobPayout = await payoutP;
+        const bobTokenPayout = await bobPayout.Token;
+
+        const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
+
+        t.equal(tokenPayoutAmount.extent, 1000, `correct payment amount`);
       }
+    }
 
-      return pushPullMoney(1, false)
-        .then(async (x) => {
-          await E(timerService).tick("Going to the future");
-          return pushPullMoney(1, true);
-        });
+    return pushPullMoney(1, false)
+      .then(async (x) => {
+        await E(timerService).tick("Going to the future");
+        return pushPullMoney(1, true);
+      });
   } catch (e) {
     t.assert(false, e);
     console.log(e);
