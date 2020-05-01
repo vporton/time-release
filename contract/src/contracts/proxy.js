@@ -59,33 +59,20 @@ export const makeContract = harden(zcf => {
     const wrapperAmount = wrapperToken0(harden([nonce]));
     const wrapperPayment = mint0.mintPayment(wrapperAmount);
   
-    var want = {};
-    want['Wrapper' + nonce] = zfc.getCurrentAllocation(userOfferHandle, );
-    var paymentDesc = {};
-    paymentDesc['Wrapper' + nonce] = lockedPayment;
+    // var want = {};
+    // want['Wrapper' + nonce] = zfc.getCurrentAllocation(userOfferHandle, );
+    // var paymentDesc = {};
+    // paymentDesc['Wrapper' + nonce] = lockedPayment;
     await zcf
       .getZoeService()
       .offer(
         contractSelfInvite,
-        harden({ want: want }),
-        harden(paymentDesc),
+        harden({ /*want: want*/ }),
+        harden({}),
       ).then(async () => {
         // Don't forget to call this, otherwise the other side won't be able to get the money:
         //lock.setOffer(tempContractHandle); // FIXME: Remove
   
-        receiver.receivePayment(receiverWrapperPayment)
-        zcf.reallocate(
-          [tempContractHandle, userOfferHandle],
-          [
-            zcf.getCurrentAllocation(userOfferHandle),
-            zcf.getCurrentAllocation(tempContractHandle),
-          ],
-        );
-        zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
-
-        var give = {};
-        give['Wrapper' + nonce] = lockedAmount;
-
         const inviteToken =
           inviteAnOffer(
             harden({
@@ -100,28 +87,42 @@ export const makeContract = harden(zcf => {
               },
             }),
           );
-    
-        return zcf
-          .getZoeService()
-          .offer(
-            contractSelfInvite,
-            harden({ give: { Future: wrapperAmount } }), // TODO: Describe the payment here.
-            harden({ Future: wrapperPayment }),
-          ).then(async () => {
-            // Don't forget to call this, otherwise the other side won't be able to get the money:
-            //lock.setOffer(tempContractHandle);
 
-            //receiver.receivePayment(receiverWrapperPayment)
-            zcf.reallocate(
-              [tempContractHandle, userOfferHandle],
-              [
-                zcf.getCurrentAllocation(userOfferHandle),
-                zcf.getCurrentAllocation(tempContractHandle),
-              ],
-            );
-            zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
-            return `Pledge accepted.`;
-      });
+        await receiver.receivePayment(inviteToken);
+          
+      //   await zcf
+      //     .getZoeService()
+      //     .offer(
+      //       contractSelfInvite,
+      //       harden({ give: { Future: inviteToken } }), // TODO: Describe the payment here.
+      //       harden({ Future: wrapperPayment }),
+      //     ).then(async () => {
+      //       // Don't forget to call this, otherwise the other side won't be able to get the money:
+      //       //lock.setOffer(tempContractHandle);
+
+      //       //receiver.receivePayment(receiverWrapperPayment)
+      //       zcf.reallocate(
+      //         [tempContractHandle, userOfferHandle],
+      //         [
+      //           zcf.getCurrentAllocation(userOfferHandle),
+      //           zcf.getCurrentAllocation(tempContractHandle),
+      //         ],
+      //       );
+      //       zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
+      //       return `Future sent.`;
+      // });
+
+        zcf.reallocate(
+          [tempContractHandle, userOfferHandle],
+          [
+            zcf.getCurrentAllocation(userOfferHandle),
+            zcf.getCurrentAllocation(tempContractHandle),
+          ],
+        );
+        zcf.complete([tempContractHandle, userOfferHandle]); // FIXME: enough just one of them?
+
+        var give = {};
+        give['Wrapper' + nonce] = lockedAmount;
     });
 
   };
