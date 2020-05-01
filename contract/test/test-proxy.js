@@ -10,7 +10,7 @@ import buildManualTimer from '@agoric/zoe/tools/manualTimer'
 const contractRoot = `${__dirname}/../src/contracts/proxy.js`;
 
 test.only('zoe - time release', async t => {
-  t.plan(2);
+  t.plan(4);
   try {
     // Setup initial conditions
     const zoe = makeZoe({ require });
@@ -37,7 +37,7 @@ test.only('zoe - time release', async t => {
           })
         });    
 
-    async function pushPullMoney(date, positive) {
+    async function pushPullMoney(date) {
       const addAssetsInvite = inviteIssuer.claim(publicAPI.makeAddAssetsInvite()(harden(date)));
 
       // Alice adds assets
@@ -68,12 +68,13 @@ test.only('zoe - time release', async t => {
       const tokenPayoutAmount = await issuer.getAmountOf(bobTokenPayout);
 
       t.equal(tokenPayoutAmount.extent, 1000, `correct payment amount`);
-      t.equal(await E(timerService).getCurrentTimestamp(), 1, `correct payment time`);
+      t.equal(await E(timerService).getCurrentTimestamp(), date+1, `correct payment time`);
     }
 
-    return pushPullMoney(1, false)
-      // .then(async (bobInvite) => {
-      // });
+    return pushPullMoney(0)
+      .then(async (bobInvite) => {
+        pushPullMoney(1);
+      });
   } catch (e) {
     t.assert(false, e);
     console.log(e);
