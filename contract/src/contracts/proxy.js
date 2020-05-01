@@ -186,12 +186,17 @@ export const makeContract = harden(zcf => {
   const { swap, assertKeywords } = makeZoeHelpers(zcf);
   assertKeywords(harden(['Token']));
 
-  const { terms: { timer }} = zcf.getInstanceRecord();
+  const { terms: { timerService }} = zcf.getInstanceRecord();
 
-  const makeClaimAssetsInvite = addAssetsOfferHandle => {
+  let dates = Map(); // invite -> timestamp
+
+  const makeClaimAssetsInvite = date => addAssetsOfferHandle => {
     const claimAssetsOfferHook = claimAssetsOfferHandle => {
-      // TODO: use the timer to ensure that this reallocation and completion
-      // happens only after a certain time.
+      if(await E(timerService).getCurrentTimestamp() < date) {
+        zcf.rejectOffer(claimAssetsOfferHandle);
+        return;
+      }
+
       return swap(addAssetsOfferHandle, claimAssetsOfferHandle);
     };
 
@@ -201,11 +206,12 @@ export const makeContract = harden(zcf => {
     );
   };
 
-  const makeAddAssetsInvite = () =>
-    zcf.makeInvitation(
-      makeClaimAssetsInvite,
+  const makeAddAssetsInvite = (date) => {
+    return zcf.makeInvitation(
+      makeClaimAssetsInvite(date),
       harden({ inviteDesc: 'addAssets' }),
     );
+  }
 
   return harden({
     invite: makeAddAssetsInvite(),
